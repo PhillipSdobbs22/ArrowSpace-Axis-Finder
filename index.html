@@ -250,7 +250,6 @@
   .hint{font-size:11px; color:var(--dim); margin-top:6px; line-height:1.4;}
   .panel-actions{display:flex; gap:8px; margin-top:10px;}
   .panel-actions .btn{flex:1;}
-
     /* ===================== ADDED: launch splash, first-person POV circle build =====================
      8 beats each play full-screen, then shrink onto their own point of an 8-point ring,
      making room for the next beat. Once the ring is complete, a radar chart fades into
@@ -266,7 +265,6 @@
   .stage svg.scene{position:absolute; inset:0; width:100%; height:100%; overflow:visible;}
   .scene{opacity:0; transform-origin:0 0;}
   @keyframes sceneIn{from{opacity:0;}to{opacity:1;}}
-
   /* Beat timing (seconds from load), CIRCLE MODE:
      REVISION: back up to 8 beats, evenly spaced around the circle at 45deg apart --
      a new "arrows, static" beat (segment 1) now leads, showing the fanned quiver before
@@ -274,7 +272,7 @@
      0.0-1.5    arrows (static)   1.5-3.0    test bench (spine tester dial)
      3.0-4.5    spine value       4.5-6.0    arrows (sorted)
      6.0-7.5    arrow shaft (rotates 240deg then back to 120deg)
-     7.5-9.0    aim               9.0-10.5   arrow flight
+     7.5-9.0    aim   9.0-10.5   arrow flight
      10.5-12.5  data analysis (extra .5s hold before receding)
      12.5       radar chart swells into the center; wordmark + Enter Here button follow */
   @keyframes recede-arrows-static{
@@ -317,7 +315,6 @@
   #scene-sight{ animation: sceneIn 0.24s ease 7.5s forwards, recede-sight 0.3s ease 8.7s forwards; }
   #scene-shot{ animation: sceneIn 0.24s ease 9s forwards, recede-shot 0.3s ease 10.2s forwards; }
   #scene-data{ animation: sceneIn 0.24s ease 10.5s forwards, recede-data 0.3s ease 12.2s forwards; }
-
   .shaft-spin{ transform-origin:170px 190px; animation:shaftSpin 0.84s ease-in-out 6.18s forwards; }
   .data-zoom{ transform-origin:170px 195px; animation:dataZoom 1.3s ease 10.74s forwards; }
   @keyframes dataZoom{
@@ -329,7 +326,6 @@
     55%{transform:rotate(240deg);}
     100%{transform:rotate(120deg);}
   }
-
   /* EDIT: the closing radar chart now "swells" in larger than its native size for emphasis
      -- overshoots past its final 1.35x scale before settling, instead of a plain fade-in. */
   @keyframes radarSwell{
@@ -347,14 +343,12 @@
   .radar-best-dot{fill:var(--ok);}
   .radar-rec-label{fill:var(--dim); font-size:6.5px; font-family:"SF Mono",ui-monospace,monospace; text-anchor:middle; letter-spacing:.08em;}
   .radar-rec-value{fill:var(--ok); font-size:12px; font-weight:700; font-family:"SF Mono",ui-monospace,monospace; text-anchor:middle;}
-
   #app-splash .cap{fill:var(--dim); font-size:8px; font-family:"SF Mono",ui-monospace,monospace; letter-spacing:.05em;}
   #app-splash .instrument{fill:none; stroke:var(--dim); stroke-width:1.4; stroke-linecap:round; stroke-linejoin:round;}
   #app-splash .instrument-accent{fill:none; stroke:var(--accent); stroke-width:1.6; stroke-linecap:round;}
   #app-splash .hand{fill:var(--panel-2); stroke:var(--line); stroke-width:1;}
   #app-splash .readout-bg{fill:#0c0c0a; stroke:var(--line); stroke-width:1;}
   #app-splash .readout-text{fill:var(--accent); font-family:"SF Mono",ui-monospace,monospace; font-weight:700;}
-
   /* EDIT: dial moved to its side-view position (182,196) between the two posts. */
   .needle{ transform-origin:182px 196px; animation:needleSweep 0.78s ease-in-out 1.68s forwards; }
   @keyframes needleSweep{
@@ -406,7 +400,6 @@
     15%{opacity:1;}
     100%{opacity:1; transform:translateX(30px);}
   }
-
   #app-splash .wordmark{
     margin-top:16px;
     font-family:"SF Mono",ui-monospace,monospace;font-size:13px;letter-spacing:.2em;
@@ -415,7 +408,6 @@
   }
   #app-splash .wordmark b{color:var(--text);font-weight:650;letter-spacing:.05em;}
   @keyframes fadeup{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-
   /* sound-wave graphic — appears alongside the wordmark, syncs with the voice line */
   #app-splash .sound-wave{ opacity:0; margin-top:9px; animation:fadeup 0.3s ease 12.68s forwards; }
   /* the bars' idle bounce -- purely decorative now that voice playback is gesture-triggered
@@ -432,7 +424,6 @@
     0%,100%{transform:scaleY(.4);}
     50%{transform:scaleY(1);}
   }
-
   #enter-btn{
     margin-top:22px; padding:12px 34px; border:none; border-radius:10px;
     background:var(--accent); color:#1a1408; font-size:14px; font-weight:700;
@@ -455,7 +446,6 @@
     0%,80%,100%{opacity:.35; transform:scale(1);}
     40%{opacity:1; transform:scale(1.3);}
   }
-
   /* skip-intro: visible from the very start, lets the user jump straight into the app */
   #skip-intro-btn{
     position:absolute; top:max(16px, env(safe-area-inset-top)); right:16px; z-index:3;
@@ -465,7 +455,6 @@
   }
   #skip-intro-btn:active{color:var(--accent); border-color:var(--accent);}
   /* ===================== END launch splash ===================== */
-
 /* ===================== ADDED: inline button dot loader (backup/restore) ===================== */
   .btn-loading{position:relative; color:transparent !important; pointer-events:none;}
   .btn-dots{
@@ -483,18 +472,86 @@
     40%{opacity:1; transform:scale(1.3);}
   }
   /* ===================== END ADDED STYLES ===================== */
+
+/* ===================== ADDED: live teaching pointer (rev. teach-1, 2026-08-28) =====================
+   Lets the app's owner point things out on a friend's screen during a phone call, without
+   screen-sharing or remote control. Presenter side streams pointer position over a public
+   MQTT-over-websocket relay; viewer side renders a highlight/dot. See bottom of the JS block
+   (asx* namespace) for the logic. Purely additive -- touches no existing arrow/spine/shot code. */
+  #asx-teach-btn{
+    position:fixed; left:14px; bottom:14px; z-index:900;
+    background:var(--panel-2); border:1px solid var(--line); color:var(--dim);
+    font-family:"SF Mono", ui-monospace, monospace; font-size:11px; letter-spacing:.05em;
+    padding:9px 14px; border-radius:20px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.35);
+  }
+  #asx-teach-btn:active{color:var(--accent); border-color:var(--accent);}
+  #asx-teach-panel{
+    position:fixed; left:14px; right:14px; bottom:60px; z-index:900; max-width:400px;
+    margin:0 auto; background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:16px; display:none; box-shadow:0 6px 24px rgba(0,0,0,.45);
+  }
+  #asx-teach-panel.show{display:block;}
+  #asx-teach-panel h4{margin:0 0 8px; font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim);}
+  #asx-teach-link{
+    width:100%; background:var(--panel-2); border:1px solid var(--line); border-radius:8px;
+    color:var(--text); padding:9px 10px; font-size:12px; font-family:"SF Mono", ui-monospace, monospace;
+    margin-bottom:8px;
+  }
+  #asx-teach-status{font-size:12px; color:var(--dim); margin-bottom:10px;}
+  #asx-teach-panel .row{display:flex; gap:8px;}
+  #asx-invite-banner{
+    position:fixed; top:0; left:0; right:0; z-index:950; background:var(--accent-dim);
+    color:var(--text); padding:12px 16px; display:none; align-items:center; gap:10px;
+    flex-wrap:wrap; font-size:13px; box-shadow:0 2px 10px rgba(0,0,0,.4);
+  }
+  #asx-invite-banner.show{display:flex;}
+  #asx-invite-banner .asx-msg{flex:1; min-width:200px;}
+  #asx-invite-banner button{
+    padding:7px 14px; border-radius:8px; border:none; font-size:12px; font-weight:600; cursor:pointer;
+  }
+  #asx-invite-allow{background:var(--accent); color:#1a1408;}
+  #asx-invite-deny{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.4) !important;}
+  #asx-pointer-status{
+    position:fixed; left:50%; bottom:14px; transform:translateX(-50%); z-index:900;
+    background:var(--panel-2); border:1px solid var(--line); color:var(--dim);
+    font-size:11px; font-family:"SF Mono", ui-monospace, monospace; padding:7px 14px;
+    border-radius:20px; display:none; cursor:pointer;
+  }
+  #asx-pointer-status.show{display:block;}
+  #asx-spot{
+    position:fixed; z-index:970; pointer-events:none; display:none;
+    border:2.5px solid var(--accent); box-shadow:0 0 0 3px rgba(201,130,47,.35), 0 0 16px rgba(201,130,47,.5);
+    transition:left .1s linear, top .1s linear, width .1s linear, height .1s linear, border-radius .1s linear;
+  }
+  #asx-spot.show{display:block;}
+  /* ===================== END ADDED: live teaching pointer ===================== */
 </style>
 </head>
 <body>
-
-<!-- ===================== ADDED: launch splash markup ===================== -->
+<!-- ===================== ADDED: live teaching pointer markup ===================== -->
+<div id="asx-invite-banner">
+  <span class="asx-msg" id="asx-invite-msg">Someone wants to point things out on your screen during your call.</span>
+  <button id="asx-invite-allow">Allow</button>
+  <button id="asx-invite-deny">No thanks</button>
+</div>
+<button id="asx-teach-btn" type="button">&#128070; Teach</button>
+<div id="asx-teach-panel">
+  <h4>Point things out on a call</h4>
+  <div id="asx-teach-status">Tap "Start" to generate a link, then send it to whoever you're calling.</div>
+  <input id="asx-teach-link" readonly value="" style="display:none;">
+  <div class="row">
+    <button class="btn btn-primary btn-sm" id="asx-teach-start" style="flex:1;">Start</button>
+    <button class="btn btn-ghost btn-sm" id="asx-teach-copy" style="display:none;">Copy link</button>
+    <button class="btn btn-ghost btn-sm" id="asx-teach-stop" style="display:none;">Stop</button>
+    <button class="btn btn-ghost btn-sm" id="asx-teach-close">Close</button>
+  </div>
+</div>
+<div id="asx-pointer-status">Pointer active &middot; tap to stop</div>
+<div id="asx-spot"></div>
+<!-- ===================== END ADDED ===================== -->
 <div id="app-splash">
   <button id="skip-intro-btn" onclick="skipIntro()">Skip Intro</button>
   <div class="stage">
-
-    <!-- BEAT 1: arrows, static — glancing down at arrows fanned in quiver, no sort motion.
-         EDIT: duplicated from the original arrows beat (now Beat 4) with the arrow-sort
-         wrapper groups/classes stripped out, so the arrows simply rise in and hold. -->
     <svg id="scene-arrows-static" class="scene" viewBox="0 0 340 400">
       <g>
         <g>
@@ -521,18 +578,9 @@
       <path class="hand" d="M70,360 Q170,385 285,358 L285,375 Q170,398 70,378 Z" />
       <text class="cap" x="170" y="30" text-anchor="middle">SELECTING SHAFT — FLEET 6</text>
     </svg>
-
-    <!-- BEAT 2: test bench — looking down at the spine-tester dial indicator -->
-    <!-- EDIT: replaced with a SIDE VIEW of the spine-tester bench, matching the reference
-         photo -- rail with roller supports at both ends, an arrow shaft resting across
-         them (labeled "ArrowSpace"), a spring-loaded post, and the dial indicator on its
-         own shorter post between them, with its plunger touching the shaft. -->
     <svg id="scene-gauge" class="scene" viewBox="0 0 340 400">
-      <!-- rail -->
       <rect class="instrument" x="40" y="304" width="260" height="8" rx="1.5" />
       <line x1="40" y1="308" x2="300" y2="308" stroke="var(--dim)" stroke-width="1"/>
-
-      <!-- arrow shaft, resting across the rollers at their pivot height -->
       <g>
         <rect x="42" y="262" width="252" height="4" rx="2" fill="var(--dim)" stroke="#1a1a17" stroke-width="0.75"/>
         <polygon points="294,258.5 294,269.5 308,264" fill="#c9c6ba" stroke="#1a1a17" stroke-width="1"/>
@@ -541,31 +589,21 @@
         <polygon points="50,268.5 60,274 60,268" fill="var(--accent)"/>
         <text x="95" y="265.5" text-anchor="middle" fill="var(--text)" stroke="var(--accent)" stroke-width="0.6" paint-order="stroke fill" font-size="6" font-weight="700" font-family="SF Mono, ui-monospace, monospace" letter-spacing="0.5">ArrowSpace</text>
       </g>
-
-      <!-- left roller support -->
       <rect class="instrument" x="53" y="272" width="12" height="36" rx="2" />
       <circle class="instrument" cx="59" cy="264" r="10" style="stroke-width:1.6" />
       <circle cx="59" cy="264" r="3" fill="var(--dim)"/>
-
-      <!-- right roller support -->
       <rect class="instrument" x="275" y="272" width="12" height="36" rx="2" />
       <circle class="instrument" cx="281" cy="264" r="10" style="stroke-width:1.6" />
       <circle cx="281" cy="264" r="3" fill="var(--dim)"/>
       <path class="instrument" d="M303,308 L303,270 L317,270" />
-
-      <!-- tall spring-loaded post -->
       <rect class="instrument" x="148" y="92" width="17" height="216" rx="2" />
       <rect x="154.5" y="132" width="4" height="96" fill="var(--line)"/>
       <polyline points="154.5,134 158.5,140 154.5,146 158.5,152 154.5,158 158.5,164 154.5,170 158.5,176 154.5,182 158.5,188 154.5,194 158.5,200 154.5,206 158.5,212 154.5,218 158.5,224"
                 fill="none" stroke="var(--dim)" stroke-width="1"/>
       <circle cx="156.5" cy="108" r="6.5" fill="var(--panel-2)" stroke="var(--line)" stroke-width="1"/>
       <circle cx="156.5" cy="288" r="6.5" fill="var(--panel-2)" stroke="var(--line)" stroke-width="1"/>
-
-      <!-- shorter post holding the dial indicator -->
       <rect class="instrument" x="193" y="172" width="15" height="136" rx="2" />
       <circle cx="200.5" cy="288" r="6.5" fill="var(--panel-2)" stroke="var(--line)" stroke-width="1"/>
-
-      <!-- dial indicator -->
       <circle cx="182" cy="196" r="34" fill="var(--panel-2)" stroke="var(--dim)" stroke-width="1.6"/>
       <circle cx="182" cy="196" r="27" fill="none" stroke="var(--line)" stroke-width="1"/>
       <g stroke="var(--dim)" stroke-width="1">
@@ -580,12 +618,9 @@
       </g>
       <line class="needle" x1="182" y1="196" x2="190.6" y2="174.7" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
       <circle cx="182" cy="196" r="2.5" fill="var(--text)"/>
-      <!-- contact plunger, touching the arrow shaft's top surface -->
       <line x1="182" y1="230" x2="182" y2="262" stroke="var(--dim)" stroke-width="2" stroke-linecap="round"/>
       <circle cx="182" cy="262" r="2" fill="var(--dim)"/>
     </svg>
-
-    <!-- BEAT 3: spine results — the reading from Beat 1 confirmed on a readout -->
     <svg id="scene-spine-results" class="scene" viewBox="0 0 340 400">
       <path class="hand" d="M90,300 Q60,270 75,235 L110,225 Q140,235 135,270 Z" />
       <rect class="readout-bg" x="95" y="150" width="150" height="95" rx="10" />
@@ -594,9 +629,6 @@
       <path class="instrument" d="M80,247 L260,247" />
       <text class="cap" x="170" y="270" text-anchor="middle">MATCHED TO FLEET 6</text>
     </svg>
-
-    <!-- BEAT 4: arrows, sorted — the original arrows beat, moved from position 1. Arrows rise
-         in fanned, then slide sideways into color-sorted order (accent left, text right). -->
     <svg id="scene-arrows" class="scene" viewBox="0 0 340 400">
       <g>
         <g class="arrow-sort arrow-sort-1">
@@ -623,17 +655,9 @@
       <path class="hand" d="M70,360 Q170,385 285,358 L285,375 Q170,398 70,378 Z" />
       <text class="cap" x="170" y="30" text-anchor="middle">SELECTING SHAFT — FLEET 6</text>
     </svg>
-
-    <!-- REVISION: the standalone "target" beat (formerly Beat 4, plain range-set reveal) was
-         removed per request -- the target still appears later inside Beat 6 (aim) and the
-         live app itself, so nothing is lost, just the redundant solo beat. -->
-
-    <!-- BEAT 5: arrow shaft — the real orientation graphic from this app's Log Shot screen,
-         rotates 240° then back to 120° before receding onto the ring -->
     <svg id="scene-shaft" class="scene" viewBox="0 0 340 400">
       <g class="shaft-spin">
         <g transform="translate(70,60) scale(2)">
-          <!-- 3 vanes, evenly spaced 120° apart around the shaft center (50,65) — all one color -->
           <path d="M50 2 L60 46 L50 40 L40 46 Z" fill="#4a4a44"/>
           <path d="M50 2 L60 46 L50 40 L40 46 Z" fill="#4a4a44" transform="rotate(120 50 65)"/>
           <path d="M50 2 L60 46 L50 40 L40 46 Z" fill="#4a4a44" transform="rotate(240 50 65)"/>
@@ -646,8 +670,6 @@
       </g>
       <text class="cap" x="170" y="380" text-anchor="middle">ORIENTATION — NOCK VIEW</text>
     </svg>
-
-    <!-- BEAT 6: aim — sight picture down the riser at the target -->
     <svg id="scene-sight" class="scene" viewBox="0 0 340 400">
       <circle class="instrument" cx="170" cy="190" r="95" />
       <circle class="instrument" cx="170" cy="190" r="68" />
@@ -664,8 +686,6 @@
       <path class="instrument" d="M155,190 L120,330" stroke-width="1"/>
       <text class="cap" x="170" y="380" text-anchor="middle">AIM — FULL DRAW</text>
     </svg>
-
-    <!-- BEAT 7: impact — release, POV rushing down the shaft toward the target -->
     <svg id="scene-shot" class="scene" viewBox="0 0 340 400">
       <circle class="instrument" cx="170" cy="130" r="70" />
       <circle class="instrument" cx="170" cy="130" r="48" />
@@ -678,8 +698,6 @@
       <circle class="impact-flash" cx="170" cy="130" r="16" />
       <text class="cap" x="170" y="380" text-anchor="middle">IMPACT</text>
     </svg>
-
-    <!-- BEAT 8: data analysis — iOS device grouping readout; zooms in larger, holds 2.0s -->
     <svg id="scene-data" class="scene" viewBox="0 0 340 400">
       <g class="data-zoom">
         <path class="hand" d="M90,320 Q60,290 78,255 L115,245 Q145,258 138,292 Z" />
@@ -702,10 +720,6 @@
       </g>
       <text class="cap" x="170" y="290" text-anchor="middle">ANALYZING GROUPING</text>
     </svg>
-
-    <!-- radar chart — swells into the empty center, larger than its native size for
-         emphasis, once all 8 points form the ring (its own 8-spoke layout was already
-         independent of the beat count, now the beat count matches it too) -->
     <svg class="radar-mark" viewBox="0 0 340 400">
       <g transform="translate(170,190)">
         <circle class="radar-ring" r="18"/>
@@ -733,7 +747,6 @@
         <text class="radar-rec-value" x="0" y="9">90°</text>
       </g>
     </svg>
-
   </div>
   <div class="wordmark"><b>Arrow-space</b> Axis Finder</div>
   <svg class="sound-wave" viewBox="0 0 60 20" width="60" height="20">
@@ -748,8 +761,6 @@
   </svg>
   <button id="enter-btn" onclick="enterApp(this)">Enter Here</button>
 </div>
-<!-- ===================== END ADDED ===================== -->
-
 <header>
   <div class="eyebrow">Arrow Tracker · v2.4.26</div>
   <h1>ArrowSpace</h1>
@@ -1135,6 +1146,7 @@
     </div>
   </div>
 </div>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <script>
 // ---------- rev.2-2 changelog (2026-08-04) ----------
 // - Lab Data: added Float Axis (bathtub-float test) and EulerBuckle Axis (clamp/press-buckle
@@ -1158,10 +1170,7 @@ function showToast(msg){
   toastEl.classList.add('show');
   setTimeout(()=> toastEl.classList.remove('show'), 1600);
 }
-
 // ===================== ADDED: launch splash lifecycle =====================
-// The 8-beat circle-build sequence plays automatically on load (pure CSS animation,
-// nothing to trigger here). The splash only dismisses when the user taps Enter Here.
 function enterApp(btn){
   btn.classList.add('loading');
   const dots = document.createElement('span');
@@ -1174,12 +1183,6 @@ function enterApp(btn){
     if (splash) splash.classList.add('hide');
   }, 650);
 }
-
-// ===================== ADDED: end-of-intro voice line =====================
-// EDIT: accepted that Chrome/Safari autoplay policy means this can only ever play after a
-// real user gesture (click/tap/key) -- see the document-wide gesture listener below (Replay
-// Sound button removed, so this is now the only trigger). The line is a single normal-speed
-// utterance, "ArrowSpace Axis Finder" (7 syllables, ~1.5-2s at a natural speaking pace).
 let _splashAudioCtx = null;
 function getSplashAudioCtx(){
   if (!_splashAudioCtx){
@@ -1195,7 +1198,6 @@ function getDeepVoice(){
   const voices = window.speechSynthesis.getVoices();
   return voices.find(v => /male|daniel|alex|fred|aaron|david/i.test(v.name)) || voices[0];
 }
-// low mechanical rumble bed, under the start of the line
 function playIntroRumble(){
   try{
     const ctx = getSplashAudioCtx();
@@ -1217,8 +1219,6 @@ function playIntroRumble(){
     }
   }catch(e){}
 }
-// "The Worlds First ArrowSpace Axis Finder" -- one utterance, normal rate/pitch (no artificial slow-down),
-// not gated behind getVoices() resolving (some Chrome builds never fire 'voiceschanged').
 function playIntroVoice(){
   if (_voicePlayed) return;
   _voicePlayed = true;
@@ -1239,10 +1239,6 @@ function playIntroVoice(){
 (function(){
   const splashEl = document.getElementById('app-splash');
   if (splashEl){
-    // Chrome (since M71) and Safari both silently drop speechSynthesis.speak() until the
-    // page has had at least one real user gesture -- no code can bypass that, so playback
-    // is triggered off whichever gesture happens first, listened for broadly across the
-    // whole document (tapping the splash, Enter Here, Skip Intro, or any keypress).
     let voiceTriggered = false;
     function triggerVoice(){
       if (voiceTriggered) return;
@@ -1255,18 +1251,10 @@ function playIntroVoice(){
     });
   }
 })();
-// ===================== END ADDED: end-of-intro voice line =====================
-
-// Skip Intro is visible from the very start of the sequence (unlike Enter Here, which
-// only fades in once the ring/radar finish) -- jumps straight into the app, no delay.
 function skipIntro(){
   const splash = document.getElementById('app-splash');
   if (splash) splash.classList.add('hide');
 }
-
-// Wraps a button in a brief inline three-dot loader while `work` runs, so the tap has a
-// visible response even though the underlying JSON serialize/file-read is synchronous-ish.
-// `work` is called after a short delay so the dots actually get a chance to render/animate.
 function withButtonLoader(btn, work, delayMs){
   const dots = document.createElement('span');
   dots.className = 'btn-dots';
@@ -1282,11 +1270,6 @@ function withButtonLoader(btn, work, delayMs){
   }, delayMs || 450);
 }
 // ===================== END ADDED =====================
-
-// v2.4.15: custom confirm dialog. window.confirm() silently does nothing in an iOS home-screen
-// (standalone) web app -- no popup appears at all, so any code gated behind it (delete arrow,
-// restore backup) looked broken there even though it worked fine in a normal browser tab.
-// Returns a Promise<boolean> so call sites just add .then(ok => { if (!ok) return; ... }).
 const confirmBackdrop = document.getElementById('confirm-backdrop');
 const confirmMsgEl = document.getElementById('confirm-msg');
 const confirmOkBtn = document.getElementById('confirm-ok-btn');
@@ -1415,7 +1398,7 @@ function render(){
       <div class="top">
         <div style="flex:1; min-width:0;">
           <div class="id">${escapeHtml(a.arrowId)}</div>
-          <div class="meta">${a.spine != null ? 'spine ' + fmtSpine(a.spine, false) + '"' : 'spine —'} &nbsp;·&nbsp; ${a.mass != null ? fmtMass(a.mass) + ' gr' : 'mass —'} &nbsp;·&nbsp; ${a.point != null ? Number(a.point).toFixed(0) + ' gr point' : 'point —'}</div>
+          <div class="meta">${a.spine != null ? 'spine ' + fmtSpine(a.spine, false) + '"' : 'spine —'} &nbsp;&middot;&nbsp; ${a.mass != null ? fmtMass(a.mass) + ' gr' : 'mass —'} &nbsp;&middot;&nbsp; ${a.point != null ? Number(a.point).toFixed(0) + ' gr point' : 'point —'}</div>
           ${a.note ? `<div class="note">${escapeHtml(a.note)}</div>` : ''}
         </div>
         <button class="del" data-del="${a.id}">Delete</button>
@@ -1423,7 +1406,7 @@ function render(){
       <div class="actions">
         <button class="btn btn-ghost btn-sm" data-edit="${a.id}">Edit</button>
         <button class="btn btn-ghost btn-sm" data-bench="${a.id}">Bench Test</button>
-        <button class="btn btn-ghost btn-sm" data-log="${a.id}" style="flex:1;">Log shot · ${shotCount}</button>
+        <button class="btn btn-ghost btn-sm" data-log="${a.id}" style="flex:1;">Log shot &middot; ${shotCount}</button>
       </div>
     </div>
   `;}).join('');
@@ -1446,7 +1429,7 @@ function renderArrowIdSelect(){
   const list = loadArrowIdList();
   const prev = idSelect.value;
   idSelect.innerHTML =
-    (list.length ? '<option value="">Select an arrow…</option>' : '<option value="">Import list below, or choose Other</option>') +
+    (list.length ? '<option value="">Select an arrow&hellip;</option>' : '<option value="">Import list below, or choose Other</option>') +
     '<option value="__other__">Other (type manually)</option>' +
     list.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
   if ([...idSelect.options].some(o => o.value === prev)) idSelect.value = prev;
@@ -2157,7 +2140,7 @@ logShotBtn.addEventListener('click', () => {
   renderShotList();
   renderRecommendation();
   render();
-  showToast('Shot logged — ' + fmtDeg(activeOrientation) + ' · ' + distance + 'yd · LR ' + lrSquares + ' UD ' + udSquares);
+  showToast('Shot logged — ' + fmtDeg(activeOrientation) + ' &middot; ' + distance + 'yd &middot; LR ' + lrSquares + ' UD ' + udSquares);
 });
 function getShotAxisDefs(arrowIdStr, orientation){
   const axes = getArrowAxisSetLive(arrowIdStr);
@@ -2247,7 +2230,7 @@ function renderShotList(){
     }
     return `
     <div class="shot-row" data-shot="${s.id}">
-      <span class="oa">${fmtDeg(s.orientation)} · ${s.distance != null ? s.distance + 'yd' : '—'} · ${s.lrIn != null ? 'LR ' + s.lrIn.toFixed(2) + '" UD ' + s.udIn.toFixed(2) + '"' : '(' + s.x.toFixed(2) + ', ' + s.y.toFixed(2) + ')'}${s.bow ? ' · ' + escapeHtml(s.bow) : ''}</span>
+      <span class="oa">${fmtDeg(s.orientation)} &middot; ${s.distance != null ? s.distance + 'yd' : '—'} &middot; ${s.lrIn != null ? 'LR ' + s.lrIn.toFixed(2) + '" UD ' + s.udIn.toFixed(2) + '"' : '(' + s.x.toFixed(2) + ', ' + s.y.toFixed(2) + ')'}${s.bow ? ' &middot; ' + escapeHtml(s.bow) : ''}</span>
       <span>
         <button class="rm" data-editshot="${s.id}">edit</button>
         <button class="rm" data-rmshot="${s.id}">remove</button>
@@ -2341,7 +2324,7 @@ function renderRecommendation(){
   recTable.innerHTML = stats.map(s => `
     <div class="${s===best?'best':''}${s===worst?' worst':''}">
       <span>${fmtDeg(s.orientation)}</span>
-      <span>${s.count} shot${s.count===1?'':'s'} · avg r ${s.avgR.toFixed(2)}</span>
+      <span>${s.count} shot${s.count===1?'':'s'} &middot; avg r ${s.avgR.toFixed(2)}</span>
     </div>
   `).join('');
 }
@@ -2387,12 +2370,10 @@ document.getElementById('export-btn').addEventListener('click', () => {
     ? rows.length + ' shots exported (' + skipped + ' older shots skipped — no distance recorded)'
     : rows.length + ' shots exported');
 });
-// ---------- full backup / restore (fixes: fleet had no recovery path) ----------
 const backupBtn = document.getElementById('backup-btn');
 const restoreBtn = document.getElementById('restore-btn');
 const restoreFile = document.getElementById('restore-file');
 backupBtn.addEventListener('click', () => {
-  // ===================== ADDED: dot loader while the backup file is built =====================
   withButtonLoader(backupBtn, () => {
     const payload = {
       exportedAt: new Date().toISOString(),
@@ -2416,13 +2397,11 @@ backupBtn.addEventListener('click', () => {
     URL.revokeObjectURL(url);
     showToast('Backup exported — ' + payload.arrows.length + ' arrows, ' + payload.shots.length + ' shots');
   });
-  // ===================== END ADDED =====================
 });
 restoreBtn.addEventListener('click', () => restoreFile.click());
 restoreFile.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  // ===================== ADDED: dot loader while the file is read/parsed =====================
   withButtonLoader(restoreBtn, () => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -2461,7 +2440,6 @@ restoreFile.addEventListener('change', (e) => {
     reader.onerror = () => { showToast('Could not read that file'); restoreFile.value = ''; };
     reader.readAsText(file);
   });
-  // ===================== END ADDED =====================
 });
 function loadLabData(){
   try{
@@ -2541,7 +2519,7 @@ const labExportMassBtn = document.getElementById('lab-export-mass-btn');
 function renderLabIdSelect(){
   const list = loadArrowIdList();
   const prev = labIdSelect.value;
-  labIdSelect.innerHTML = '<option value="">Select an arrow…</option>' +
+  labIdSelect.innerHTML = '<option value="">Select an arrow&hellip;</option>' +
     list.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
   if ([...labIdSelect.options].some(o => o.value === prev)) labIdSelect.value = prev;
 }
@@ -2725,8 +2703,6 @@ function renderLabPositionChips(){
   const currentAngle = labIndex < LAB_POSITIONS.length ? LAB_POSITIONS[labIndex] : null;
   labPositionChips.innerHTML = ORIENT_CCW_ORDER.map(o => {
     const val = labSpine[String(o)];
-    // EDIT: the 0° chip can now be highlighted too (when it's the active focus, e.g. after
-    // tapping it to re-measure/edit the baseline), instead of being permanently excluded.
     const isCurrent = (o === 0) ? (labHighlightOverride === 0) : (o === currentAngle);
     const isBaseline = o === 0;
     const cls = 'lab-pos-chip' + (isCurrent ? ' active' : '') + (isBaseline ? ' baseline' : '');
@@ -2771,9 +2747,6 @@ labPositionChips.addEventListener('click', (e) => {
   if (!btn) return;
   const angle = parseFloat(btn.getAttribute('data-labpos'));
   if (angle === 0){
-    // EDIT: tapping the 0° chip now highlights it and jumps focus to the baseline field
-    // above so it can be re-measured / updated with a new value, instead of just showing
-    // a toast and leaving the field untouched.
     labHighlightOverride = 0;
     renderLabPositionChips();
     drawLabRadar();
@@ -3124,8 +3097,8 @@ function showLabDetails(){
   const axis = computeWeakStiffAxis(labSpine);
   if (axis){
     labAxisSummary.innerHTML = `
-      <div><span>Weak axis</span><span>${fmtDeg(axis.weakAxis)} · ${axis.weakVal.toFixed(3)}"</span></div>
-      <div><span>Stiff axis</span><span>${fmtDeg(axis.stiffAxis)} · ${axis.stiffVal.toFixed(3)}"</span></div>
+      <div><span>Weak axis</span><span>${fmtDeg(axis.weakAxis)} &middot; ${axis.weakVal.toFixed(3)}"</span></div>
+      <div><span>Stiff axis</span><span>${fmtDeg(axis.stiffAxis)} &middot; ${axis.stiffVal.toFixed(3)}"</span></div>
     `;
   } else {
     labAxisSummary.textContent = '—';
@@ -3206,7 +3179,7 @@ function renderLabList(){
       <div class="top">
         <div style="flex:1; min-width:0;">
           <div class="id">${escapeHtml(id)}</div>
-          <div class="meta">weak ${d.weakAxis != null ? fmtDeg(d.weakAxis) : '—'} &nbsp;·&nbsp; stiff ${d.stiffAxis != null ? fmtDeg(d.stiffAxis) : '—'} &nbsp;·&nbsp; ${d.mass != null ? fmtMass(d.mass) + ' gr' : 'mass —'}</div>
+          <div class="meta">weak ${d.weakAxis != null ? fmtDeg(d.weakAxis) : '—'} &nbsp;&middot;&nbsp; stiff ${d.stiffAxis != null ? fmtDeg(d.stiffAxis) : '—'} &nbsp;&middot;&nbsp; ${d.mass != null ? fmtMass(d.mass) + ' gr' : 'mass —'}</div>
         </div>
       </div>
     </div>
@@ -3273,8 +3246,6 @@ tabButtons.forEach(btn => {
     if (target === 'landing') renderLandingArrowSelect();
   });
 });
-// EDIT: "Back to Sessions" button removed from the top of the Vault page per request;
-// this listener is now guarded (element no longer exists) so no console error is thrown.
 const fleetToLandingBtn = document.getElementById('fleet-to-landing-btn');
 if (fleetToLandingBtn){
   fleetToLandingBtn.addEventListener('click', () => {
@@ -3290,7 +3261,7 @@ function renderLandingArrowSelect(){
   const fleetNames = loadArrows().map(a => a.arrowId);
   const extras = fleetNames.filter(name => !imported.includes(name));
   const combined = [...imported, ...extras];
-  landingArrowSelect.innerHTML = '<option value="">Select an arrow…</option>' +
+  landingArrowSelect.innerHTML = '<option value="">Select an arrow&hellip;</option>' +
     combined.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
   landingHint.textContent = combined.length
     ? combined.length + ' arrow' + (combined.length === 1 ? '' : 's') + ', in the order from your last workbook import. Re-import under the Vault tab any time the workbook changes.'
@@ -3386,6 +3357,246 @@ document.getElementById('list').addEventListener('click', (e) => {
   openWorkspace(arrow.arrowId, 'bench');
 });
 render();
+
+// ===================== ADDED: live teaching pointer (rev. teach-1, 2026-08-28) =====================
+// Purpose: let the app's owner point things out on a friend's screen during a plain phone
+// call, without screen-sharing or remote control. Presenter side streams pointer position
+// (snapped to a real element when possible, else viewport-relative coordinates) over a public
+// MQTT-over-websocket relay; the viewer renders a highlight/dot. Entirely additive -- no
+// existing arrow/spine/shot code above is touched or called from here except read-only.
+(function(){
+  const ASX_BROKER = 'wss://broker.hivemq.com:8884/mqtt';
+  const params = new URLSearchParams(location.search);
+  const joinCode = params.get('join');
+
+  const teachBtn = document.getElementById('asx-teach-btn');
+  const teachPanel = document.getElementById('asx-teach-panel');
+  const teachStatus = document.getElementById('asx-teach-status');
+  const teachLinkInput = document.getElementById('asx-teach-link');
+  const teachStartBtn = document.getElementById('asx-teach-start');
+  const teachCopyBtn = document.getElementById('asx-teach-copy');
+  const teachStopBtn = document.getElementById('asx-teach-stop');
+  const teachCloseBtn = document.getElementById('asx-teach-close');
+  const inviteBanner = document.getElementById('asx-invite-banner');
+  const inviteAllow = document.getElementById('asx-invite-allow');
+  const inviteDeny = document.getElementById('asx-invite-deny');
+  const pointerStatus = document.getElementById('asx-pointer-status');
+  const spotEl = document.getElementById('asx-spot');
+
+  let asxClient = null;
+  let asxRole = null; // 'presenter' | 'viewer'
+  let asxCode = null;
+  let asxIdleTimer = null;
+  let asxLastScrollSync = 0;
+
+  function asxTopic(code){ return 'arrowspace-axisfinder/spotlight/' + code; }
+  function asxPresenceTopic(code){ return asxTopic(code) + '/presence'; }
+
+  function asxRandomCode(){
+    return Math.random().toString(36).slice(2, 7).toUpperCase();
+  }
+
+  // ---- element targeting (presenter side) ----
+  const ASX_DATA_ATTRS = ['data-o','data-dir','data-yd','data-tab','data-mode','data-del','data-edit',
+    'data-bench','data-log','data-labpos','data-editshot','data-rmshot','data-edit-orient',
+    'data-edit-distance','data-edit-bow','data-save-shot','data-cancel-shot','data-roll','data-wrap','data-labreading','data-rm-labreading'];
+  function asxSelector(el){
+    if (!el || el === document.body || el === document.documentElement) return null;
+    if (el.closest && el.closest('#asx-teach-panel, #asx-teach-btn, #asx-invite-banner, #asx-pointer-status, #asx-spot')) return null;
+    if (el.id) return '#' + CSS.escape(el.id);
+    for (const attr of ASX_DATA_ATTRS){
+      if (el.hasAttribute && el.hasAttribute(attr)){
+        return '[' + attr + '="' + CSS.escape(el.getAttribute(attr)) + '"]';
+      }
+    }
+    let path = [];
+    let node = el;
+    let depth = 0;
+    while (node && node.nodeType === 1 && depth < 5){
+      if (node.id){ path.unshift('#' + CSS.escape(node.id)); break; }
+      const parent = node.parentElement;
+      if (!parent){ path.unshift(node.tagName.toLowerCase()); break; }
+      const siblings = Array.from(parent.children).filter(c => c.tagName === node.tagName);
+      const idx = siblings.indexOf(node) + 1;
+      path.unshift(node.tagName.toLowerCase() + ':nth-of-type(' + idx + ')');
+      node = parent;
+      depth++;
+    }
+    return path.length ? path.join('>') : null;
+  }
+  function asxClosestTarget(el){
+    return el.closest('button, .chip, select, input, textarea, .arrow-card, .panel, svg, a, [data-o],[data-dir],[data-yd],[data-tab],[data-mode],[data-del],[data-edit],[data-bench],[data-log],[data-labpos]') || el;
+  }
+
+  // ---- presenter: stream pointer position ----
+  let asxLastSent = 0;
+  function asxHandlePointer(clientX, clientY){
+    if (!asxClient || asxRole !== 'presenter') return;
+    const now = performance.now();
+    if (now - asxLastSent < 80) return;
+    asxLastSent = now;
+    const rawEl = document.elementFromPoint(clientX, clientY);
+    const target = rawEl ? asxClosestTarget(rawEl) : null;
+    const sel = target ? asxSelector(target) : null;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollFrac = docH > 0 ? Math.max(0, Math.min(1, window.scrollY / docH)) : 0;
+    const payload = sel
+      ? { t:'snap', s: sel, sf: scrollFrac }
+      : { t:'free', x: clientX / window.innerWidth, y: clientY / window.innerHeight, sf: scrollFrac };
+    try{ asxClient.publish(asxTopic(asxCode), JSON.stringify(payload), { qos:0 }); }catch(e){}
+  }
+  function asxPointerMove(e){ asxHandlePointer(e.clientX, e.clientY); }
+  function asxTouchMove(e){
+    if (!e.touches || !e.touches[0]) return;
+    asxHandlePointer(e.touches[0].clientX, e.touches[0].clientY);
+  }
+
+  // ---- viewer: render what the presenter is pointing at ----
+  function asxClearIdle(){
+    if (asxIdleTimer) clearTimeout(asxIdleTimer);
+    asxIdleTimer = setTimeout(() => { spotEl.classList.remove('show'); }, 3000);
+  }
+  function asxShowSnap(sel){
+    let el = null;
+    try{ el = document.querySelector(sel); }catch(e){}
+    if (!el){ spotEl.classList.remove('show'); return; }
+    const r = el.getBoundingClientRect();
+    spotEl.style.left = (r.left - 6) + 'px';
+    spotEl.style.top = (r.top - 6) + 'px';
+    spotEl.style.width = (r.width + 12) + 'px';
+    spotEl.style.height = (r.height + 12) + 'px';
+    spotEl.style.borderRadius = '10px';
+    spotEl.classList.add('show');
+    asxClearIdle();
+  }
+  function asxShowFree(xFrac, yFrac){
+    const x = xFrac * window.innerWidth;
+    const y = yFrac * window.innerHeight;
+    const size = 26;
+    spotEl.style.left = (x - size/2) + 'px';
+    spotEl.style.top = (y - size/2) + 'px';
+    spotEl.style.width = size + 'px';
+    spotEl.style.height = size + 'px';
+    spotEl.style.borderRadius = '50%';
+    spotEl.classList.add('show');
+    asxClearIdle();
+  }
+  function asxMaybeFollowScroll(sf){
+    const now = performance.now();
+    if (now - asxLastScrollSync < 900) return;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    if (docH <= 0) return;
+    const myFrac = window.scrollY / docH;
+    if (Math.abs(myFrac - sf) > 0.12){
+      asxLastScrollSync = now;
+      window.scrollTo({ top: sf * docH, behavior: 'smooth' });
+    }
+  }
+  function asxHandleMessage(payload){
+    let msg;
+    try{ msg = JSON.parse(payload); }catch(e){ return; }
+    if (msg.t === 'snap') asxShowSnap(msg.s);
+    else if (msg.t === 'free') asxShowFree(msg.x, msg.y);
+    if (typeof msg.sf === 'number') asxMaybeFollowScroll(msg.sf);
+  }
+
+  // ---- connection setup ----
+  function asxConnect(code, role){
+    if (typeof mqtt === 'undefined'){
+      if (role === 'presenter') teachStatus.textContent = 'Could not load the live-pointer service (no network?). Try again in a moment.';
+      return;
+    }
+    asxCode = code;
+    asxRole = role;
+    try{
+      asxClient = mqtt.connect(ASX_BROKER, { clientId: 'asx_' + Math.random().toString(16).slice(2) });
+    }catch(e){ return; }
+    asxClient.on('connect', () => {
+      if (role === 'presenter'){
+        asxClient.subscribe(asxPresenceTopic(code));
+        teachStatus.textContent = 'Link ready — waiting for them to open it and tap Allow.';
+        document.addEventListener('pointermove', asxPointerMove);
+        document.addEventListener('touchmove', asxTouchMove, { passive:true });
+      } else {
+        asxClient.subscribe(asxTopic(code));
+        asxClient.publish(asxPresenceTopic(code), JSON.stringify({t:'hello'}));
+        pointerStatus.classList.add('show');
+      }
+    });
+    asxClient.on('message', (topic, message) => {
+      const text = message.toString();
+      if (role === 'presenter' && topic === asxPresenceTopic(code)){
+        let msg; try{ msg = JSON.parse(text); }catch(e){ return; }
+        if (msg.t === 'hello') teachStatus.textContent = 'Connected — move your finger or mouse over the app to point at things.';
+        return;
+      }
+      if (role === 'viewer' && topic === asxTopic(code)){
+        asxHandleMessage(text);
+      }
+    });
+  }
+  function asxDisconnectPresenter(){
+    document.removeEventListener('pointermove', asxPointerMove);
+    document.removeEventListener('touchmove', asxTouchMove);
+    if (asxClient){ try{ asxClient.end(true); }catch(e){} asxClient = null; }
+    asxRole = null;
+  }
+  function asxDisconnectViewer(){
+    if (asxClient){ try{ asxClient.end(true); }catch(e){} asxClient = null; }
+    asxRole = null;
+    spotEl.classList.remove('show');
+    pointerStatus.classList.remove('show');
+  }
+
+  // ---- presenter UI wiring ----
+  teachBtn.addEventListener('click', () => {
+    teachPanel.classList.toggle('show');
+  });
+  teachCloseBtn.addEventListener('click', () => teachPanel.classList.remove('show'));
+  teachStartBtn.addEventListener('click', () => {
+    const code = asxRandomCode();
+    const link = location.origin + location.pathname + '?join=' + code;
+    teachLinkInput.value = link;
+    teachLinkInput.style.display = 'block';
+    teachCopyBtn.style.display = 'inline-block';
+    teachStopBtn.style.display = 'inline-block';
+    teachStartBtn.style.display = 'none';
+    teachStatus.textContent = 'Connecting…';
+    asxConnect(code, 'presenter');
+  });
+  teachCopyBtn.addEventListener('click', () => {
+    teachLinkInput.select();
+    try{ document.execCommand('copy'); showToast('Link copied'); }
+    catch(e){
+      if (navigator.clipboard) navigator.clipboard.writeText(teachLinkInput.value).then(() => showToast('Link copied'));
+    }
+  });
+  teachStopBtn.addEventListener('click', () => {
+    asxDisconnectPresenter();
+    teachStatus.textContent = 'Stopped. Tap "Start" to begin a new session.';
+    teachLinkInput.style.display = 'none';
+    teachCopyBtn.style.display = 'none';
+    teachStopBtn.style.display = 'none';
+    teachStartBtn.style.display = 'inline-block';
+  });
+
+  // ---- viewer (recipient) UI wiring ----
+  if (joinCode){
+    inviteBanner.classList.add('show');
+    inviteAllow.addEventListener('click', () => {
+      inviteBanner.classList.remove('show');
+      asxConnect(joinCode, 'viewer');
+    });
+    inviteDeny.addEventListener('click', () => {
+      inviteBanner.classList.remove('show');
+    });
+  }
+  pointerStatus.addEventListener('click', () => {
+    asxDisconnectViewer();
+    showToast('Live pointer stopped');
+  });
+})();
+// ===================== END ADDED: live teaching pointer =====================
 </script>
 </body>
 </html>
