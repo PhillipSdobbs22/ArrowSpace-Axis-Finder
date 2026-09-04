@@ -131,7 +131,7 @@
   }
   .modal.show{transform:translateY(0);}
   .modal-handle{width:36px; height:4px; background:var(--line); border-radius:2px; margin:0 auto 14px;}
-  /* v3.0.01: custom confirm dialog -- replaces window.confirm(), which silently fails to show
+  /* v2.4.15: custom confirm dialog -- replaces window.confirm(), which silently fails to show
      any dialog at all in an iOS home-screen (standalone) web app, unlike Chrome/Safari tabs. */
   .confirm-backdrop{
     position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:60;
@@ -532,7 +532,8 @@
    shot rather than distorting one figure by scaling limbs.
    Pure CSS keyframes -- no GIF, no network, crisp on Retina, works offline / as an iOS
    home-screen app.  Pauses while the workspace view is open; tap to replay.
-   Geometry: flight line y=50. Arrows drawn tip-at-origin with a 56px shaft, so an arrow
+   Geometry: flight line y=50; a target butt sits behind the apple so arrows embed in
+   the gold rather than stopping in mid-air. Arrows drawn tip-at-origin with a 56px shaft, so an arrow
    at translateX(146) has its nock at 90 -- exactly the archer's anchor hand -- and at
    translateX(336) its tip is buried in the apple with its nock at 280, which is where
    arrow2's tip lands. Apple r=6.5. */
@@ -543,8 +544,11 @@
 }
 #hh-anim svg{display:block; width:100%; height:auto;}
 #hh-anim .hh-ground{stroke:var(--line); stroke-width:1;}
-#hh-anim .hh-post{fill:#3a3a33;}
-#hh-anim .hh-apple{fill:var(--danger);}
+#hh-anim .hh-butt-shadow{fill:#000; opacity:.35;}
+#hh-anim .hh-butt-leg-k{stroke:#141412; stroke-width:8; stroke-linecap:round;}
+#hh-anim .hh-butt-leg{stroke:#5a5648; stroke-width:5; stroke-linecap:round;}
+#hh-anim .hh-butt-brace{stroke:#5a5648; stroke-width:3.5; stroke-linecap:round;}
+#hh-anim .hh-apple{fill:var(--danger); stroke:#141412; stroke-width:1.2;}
 #hh-anim .hh-stem{stroke:#5a5030; stroke-width:1.5; stroke-linecap:round;}
 #hh-anim .hh-shaft{stroke:var(--dim); stroke-width:2.6; stroke-linecap:round;}
 #hh-anim .hh-shaft-half{stroke:var(--dim); stroke-width:1.2; stroke-linecap:round;}
@@ -608,11 +612,11 @@
   100%{opacity:0; transform:translate(7px,15px) rotate(24deg);}
 }
 /* apple: whole until impact, then top and bottom halves peel open. Hinged at the LEFT
-   edge (325.5px) where the arrow enters, so the cut runs along the flight path. */
+   edge (331.5px) where the arrow enters, so the cut runs along the flight path. */
 #hh-anim .hh-apple-whole{animation:hhAppleWhole 8s linear infinite;}
 @keyframes hhAppleWhole{0%,25.9%{opacity:1;} 26%,100%{opacity:0;}}
-#hh-anim .hh-half-t{transform-origin:325.5px 50px; opacity:0; animation:hhHalfT 8s linear infinite;}
-#hh-anim .hh-half-b{transform-origin:325.5px 50px; opacity:0; animation:hhHalfB 8s linear infinite;}
+#hh-anim .hh-half-t{transform-origin:331.5px 50px; opacity:0; animation:hhHalfT 8s linear infinite;}
+#hh-anim .hh-half-b{transform-origin:331.5px 50px; opacity:0; animation:hhHalfB 8s linear infinite;}
 @keyframes hhHalfT{
   0%,25.9%{opacity:0; transform:translate(0,0) rotate(0);}
   26%{opacity:1; transform:translate(0,0) rotate(0);}
@@ -626,7 +630,7 @@
   100%{opacity:0; transform:translate(8px,16px) rotate(42deg);}
 }
 /* impact + nock-split flashes */
-#hh-anim .hh-flash-apple{transform-origin:332px 50px; animation:hhFlash 8s linear infinite;}
+#hh-anim .hh-flash-apple{transform-origin:338px 50px; animation:hhFlash 8s linear infinite;}
 @keyframes hhFlash{
   0%,25.9%{opacity:0; transform:scale(.2);}
   27%{opacity:1; transform:scale(1.5);}
@@ -659,6 +663,86 @@ body.hh-paused #hh-anim *{animation-play-state:paused !important;}
   #hh-anim .hh-cap{opacity:1;}
 }
 /* ===================== END header hero animation ===================== */
+/* ===================== ADDED: Demo mode + guided tour (rev. demo-1) =====================
+   Demo mode seeds a fleet from the workbook's real measurements and walks a first-time
+   viewer through the app with coach marks. It runs entirely on an IN-MEMORY storage shim,
+   so a viewer clicking through the tour can never read or overwrite the real fleet, even
+   when the demo is served from the same origin as the working app. Normal mode is the
+   untouched original code path. Purely additive. */
+.splash-btn-row{display:flex; gap:10px; align-items:center; margin-top:22px;}
+#demo-btn{
+  padding:12px 28px; border:2px solid var(--accent); border-radius:10px;
+  background:transparent; color:var(--accent); font-size:14px; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase; font-family:"SF Mono",ui-monospace,monospace;
+  cursor:pointer; opacity:0; animation:fadeup 0.3s ease 13.2s forwards; position:relative;
+}
+#demo-btn:active{background:var(--accent); color:#1a1408;}
+#demo-btn::after{
+  content:''; position:absolute; inset:-4px; border-radius:13px; border:2px solid var(--accent);
+  opacity:.55; animation:demoPulse 1.8s ease-out infinite; pointer-events:none;
+}
+@keyframes demoPulse{
+  0%{transform:scale(1); opacity:.55;} 70%{transform:scale(1.13); opacity:0;} 100%{opacity:0;}
+}
+.splash-btn-row #enter-btn{margin-top:0;}
+.demo-chip-row{display:flex; justify-content:flex-start; margin-top:12px;}
+#demo-chip{
+  background:transparent; border:2px solid var(--accent); color:var(--accent);
+  font-family:"SF Mono",ui-monospace,monospace; font-size:14px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; padding:11px 22px; border-radius:24px;
+  cursor:pointer; flex:none;
+}
+#demo-chip:active{background:var(--accent-dim); color:#1a1408;}
+#demo-chip.live{background:var(--accent); color:#1a1408; border-color:var(--accent);}
+/* ---- coach marks ---- */
+#tour-spot{
+  position:fixed; z-index:1200; pointer-events:none; border-radius:12px;
+  border:2px solid var(--accent); box-shadow:0 0 18px rgba(201,130,47,.75);
+  display:none;
+  /* NO transition on left/top: the rAF loop in the JS tracks the target's live rect every
+     frame, so the spotlight follows smooth-scrolling exactly. A CSS transition here fights
+     that loop and leaves the ring trailing its target by up to ~460px mid-scroll. */
+}
+#tour-spot.show{display:block;}
+#tour-spot.hunting{animation:tourHunt 1.1s ease-in-out infinite;}
+@keyframes tourHunt{0%,100%{box-shadow:0 0 18px rgba(201,130,47,.75);}
+  50%{box-shadow:0 0 34px rgba(201,130,47,1);}}
+#tour-tip{
+  position:fixed; z-index:1201; max-width:290px; background:var(--panel);
+  border:1px solid var(--accent); border-radius:12px; padding:13px 15px;
+  box-shadow:0 8px 28px rgba(0,0,0,.6); display:none;
+}
+#tour-tip.show{display:block;}
+#tour-tip .tt-step{
+  font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent);
+  font-family:"SF Mono",ui-monospace,monospace; margin-bottom:5px;
+}
+#tour-tip .tt-text{font-size:13.5px; line-height:1.45; color:var(--text); margin:0 0 11px;}
+#tour-tip .tt-actions{display:flex; gap:8px; align-items:center;}
+#tour-tip .tt-actions button{
+  font-family:inherit; font-size:12px; border-radius:8px; padding:7px 12px; cursor:pointer; border:none;
+}
+#tt-skip{background:transparent; color:var(--dim); border:1px solid var(--line) !important;}
+#tt-show{background:var(--accent); color:#1a1408; font-weight:600; display:none;}
+#tt-show.on{display:inline-block;}
+#tour-tip .tt-spacer{flex:1;}
+#tour-done{
+  position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:1201;
+  background:var(--panel); border:1px solid var(--ok); border-radius:12px; padding:14px 18px;
+  max-width:330px; display:none; box-shadow:0 8px 28px rgba(0,0,0,.6);
+}
+#tour-done.show{display:block;}
+#tour-done p{margin:0 0 10px; font-size:13.5px; line-height:1.45;}
+#tour-done .row{display:flex; gap:8px;}
+#demo-banner{
+  position:fixed; top:0; left:0; right:0; z-index:1150; background:var(--accent);
+  color:#1a1408; font-family:"SF Mono",ui-monospace,monospace; font-size:11px;
+  letter-spacing:.1em; text-transform:uppercase; text-align:center; padding:5px 10px;
+  display:none;
+}
+#demo-banner.show{display:block;}
+body.demo-live{padding-top:24px;}
+/* ===================== END Demo mode ===================== */
 </style>
 </head>
 <body>
@@ -893,12 +977,16 @@ body.hh-paused #hh-anim *{animation-play-state:paused !important;}
     <rect class="wave-bar" x="48" y="3" width="4" height="14"/>
     <rect class="wave-bar" x="56" y="6" width="4" height="8"/>
   </svg>
-  <button id="enter-btn" onclick="enterApp(this)">Enter Here</button>
+  <div class="splash-btn-row">
+    <button id="enter-btn" onclick="enterApp(this)">Enter Here</button>
+    <button id="demo-btn" type="button">See the Demo</button>
+  </div>
 </div>
 <header>
-  <div class="eyebrow">Arrow Tracker · v2.4.26</div>
+  <div class="eyebrow">Arrow Tracker &middot; v2.4.34</div>
   <h1>ArrowSpace</h1>
   <p>Log shaft's specs by its axis (0, 22.5, 45, 67.5, 90...), log shots by axis orientation to see grouping patterns.</p>
+  <div class="demo-chip-row"><button id="demo-chip" type="button">Demo</button></div>
 </header>
 <main>
   <!-- ===================== ADDED: header hero animation ===================== -->
@@ -997,46 +1085,62 @@ body.hh-paused #hh-anim *{animation-play-state:paused !important;}
           <polyline points="126,13 124,52 126,101" fill="none" stroke="#8c897a" stroke-width="0.8" opacity=".5"/>
       </g>
 
-        <!-- post + apple. Apple r=6.5; halves split along the HORIZONTAL diameter and
-             hinge at the left edge (325.5,50) where the arrow enters. -->
-        <rect class="hh-post" x="329.5" y="56" width="5" height="86" rx="2"/>
-        <g class="hh-apple-whole">
-          <circle class="hh-apple" cx="332" cy="50" r="6.5"/>
-          <line class="hh-stem" x1="332" y1="44" x2="334" y2="40"/>
-        </g>
-        <path class="hh-half-t hh-apple" d="M325.5,50 A6.5,6.5 0 0 1 338.5,50 Z"/>
-        <path class="hh-half-b hh-apple" d="M325.5,50 A6.5,6.5 0 0 0 338.5,50 Z"/>
+        <!-- TARGET BUTT: rings centred on the flight line (y=50) on a braced stand, so
+             the arrows embed in the gold instead of stopping in mid-air. Drawn first so
+             everything else sits in front of the face. -->
+        <ellipse class="hh-butt-shadow" cx="338" cy="141" rx="30" ry="3.5"/>
+        <line class="hh-butt-leg-k" x1="332" y1="80" x2="324" y2="141"/>
+        <line class="hh-butt-leg" x1="332" y1="80" x2="324" y2="141"/>
+        <line class="hh-butt-leg-k" x1="344" y1="80" x2="352" y2="141"/>
+        <line class="hh-butt-leg" x1="344" y1="80" x2="352" y2="141"/>
+        <line class="hh-butt-brace" x1="327" y1="112" x2="349" y2="112"/>
+        <ellipse cx="338" cy="50" rx="27.5" ry="38.5" fill="#141412"/>
+        <ellipse cx="338" cy="50" rx="26" ry="37" fill="#f2f0e8"/>
+        <ellipse cx="338" cy="50" rx="20.5" ry="29" fill="#2a2a26"/>
+        <ellipse cx="338" cy="50" rx="15" ry="21" fill="#4a90d9"/>
+        <ellipse cx="338" cy="50" rx="10" ry="14" fill="#d1483a"/>
+        <ellipse cx="338" cy="50" rx="6" ry="8.6" fill="#e8c93a"/>
 
         <!-- arrow1's split halves: drawn at arrow1's resting position (nock 280, tip 336),
              hinged at the nock so the split peels open left-to-right -->
         <g class="hh-a1-half-t">
           <line class="hh-shaft-half" x1="280" y1="48.8" x2="336" y2="48.8"/>
           <polygon class="hh-tip" points="336,48.8 328,46.4 328,48.8"/>
-          <path class="hh-fletch" d="M280,48.8 L294,44.2 L299,45.8 L285,48.8 Z"/>
+          <path class="hh-fletch" d="M280,48.8 L280,44.2 L297,47.7 L297,48.8 Z"/>
         </g>
         <g class="hh-a1-half-b">
           <line class="hh-shaft-half" x1="280" y1="51.2" x2="336" y2="51.2"/>
           <polygon class="hh-tip" points="336,51.2 328,53.6 328,51.2"/>
-          <path class="hh-fletch" d="M280,51.2 L294,55.8 L299,54.2 L285,51.2 Z"/>
+          <path class="hh-fletch" d="M280,51.2 L280,55.8 L297,52.3 L297,51.2 Z"/>
         </g>
 
         <!-- arrows: drawn tip-at-origin; they sit nocked on the string at translateX(146) -->
         <g class="hh-arrow1">
           <line class="hh-shaft" x1="-56" y1="50" x2="0" y2="50"/>
           <polygon class="hh-tip" points="0,50 -8,46.5 -8,53.5"/>
-          <path class="hh-fletch" d="M-56,50 L-42,44.6 L-37,46.6 L-51,50 Z"/>
-          <path class="hh-fletch" d="M-56,50 L-42,55.4 L-37,53.4 L-51,50 Z"/>
+          <path class="hh-fletch" d="M-56,50 L-56,45.2 L-39,48.9 L-39,50 Z"/>
+          <path class="hh-fletch" d="M-56,50 L-56,54.8 L-39,51.1 L-39,50 Z"/>
           <line class="hh-nockline" x1="-56" y1="47.4" x2="-56" y2="52.6"/>
         </g>
         <g class="hh-arrow2">
           <line class="hh-shaft" x1="-56" y1="50" x2="0" y2="50"/>
           <polygon class="hh-tip" points="0,50 -8,46.5 -8,53.5"/>
-          <path class="hh-fletch" d="M-56,50 L-42,44.6 L-37,46.6 L-51,50 Z"/>
-          <path class="hh-fletch" d="M-56,50 L-42,55.4 L-37,53.4 L-51,50 Z"/>
+          <path class="hh-fletch" d="M-56,50 L-56,45.2 L-39,48.9 L-39,50 Z"/>
+          <path class="hh-fletch" d="M-56,50 L-56,54.8 L-39,51.1 L-39,50 Z"/>
           <line class="hh-nockline" x1="-56" y1="47.4" x2="-56" y2="52.6"/>
         </g>
 
-        <circle class="hh-flash hh-flash-apple" cx="332" cy="50" r="6"/>
+        <!-- apple, centred on the gold in front of the face. Halves split along the
+             HORIZONTAL diameter and hinge at the left edge (331.5,50) where the arrow
+             enters, so the split peels open left-to-right along the flight path. -->
+        <g class="hh-apple-whole">
+          <circle class="hh-apple" cx="338" cy="50" r="6.5"/>
+          <line class="hh-stem" x1="338" y1="44" x2="340" y2="40"/>
+        </g>
+        <path class="hh-half-t hh-apple" d="M331.5,50 A6.5,6.5 0 0 1 344.5,50 Z"/>
+        <path class="hh-half-b hh-apple" d="M331.5,50 A6.5,6.5 0 0 0 344.5,50 Z"/>
+
+        <circle class="hh-flash hh-flash-apple" cx="338" cy="50" r="6"/>
         <circle class="hh-flash hh-flash-nock" cx="280" cy="50" r="7"/>
 
         <text class="hh-cap" x="200" y="152">NOCK SPLIT — SAME AXIS, EVERY SHOT</text>
@@ -1504,7 +1608,7 @@ function playIntroVoice(){
     if ('speechSynthesis' in window){
       window.speechSynthesis.cancel();
       const deep = getDeepVoice();
-      const u = new SpeechSynthesisUtterance('The ArrowSpace Axis Finder');
+      const u = new SpeechSynthesisUtterance('First of its kind by ArrowSpace, the Arrow Axis Finder');
       u.pitch = 1;
       u.rate = 1;
       u.volume = 1;
@@ -3896,6 +4000,222 @@ render();
   });
 })();
 // ===================== END ADDED =====================
+
+// ===================== ADDED: Demo mode + guided tour (rev. demo-1) =====================
+// Seeds a sample fleet from the workbook's real measurements and walks a first-time viewer
+// through the app with coach marks. CRITICAL: demo mode swaps window.localStorage for an
+// in-memory shim, so nothing the viewer does is ever written to disk and the real fleet is
+// untouched even when this file is served from the same origin as the working app.
+// Normal mode ("Enter Here") never calls any of this -- it is the original code path.
+(function(){
+  const DEMO_SEED = {
+  "arrowIdList": "[\"Arrow 3 PredatorCherry\", \"Arrow 4 JoccoPolar\", \"Arrow 5 PredatorHaggard\", \"Arrow 1 Jocco Zinger\", \"Arrow 2 SanDragon7\", \"Arrow 6 GTWarrior\"]",
+  "arrowGuidanceMap": "{\"Arrow 3 PredatorCherry\": \"Shoot at 201.1 deg AND 21.1 deg, on Genesis (NASP).\", \"Arrow 4 JoccoPolar\": \"Shoot at 22.8 deg AND 202.8 deg, on Genesis (NASP).\", \"Arrow 5 PredatorHaggard\": \"Shoot at 29.4 deg AND 209.4 deg, on Genesis (NASP).\", \"Arrow 1 Jocco Zinger\": \"Predicted best orientation: 23 deg; worst near 113 deg.\", \"Arrow 2 SanDragon7\": \"Predicted best orientation: 196.4 deg.\", \"Arrow 6 GTWarrior\": \"Predicted best orientation: 28.9 deg.\"}",
+  "arrowWorkbookDataMap": "{\"Arrow 3 PredatorCherry\": {\"spine\": 0.1915, \"mass\": null, \"point\": 100, \"weakAxis\": 0, \"stiffAxis\": 270, \"floAxis\": 90, \"floatAxis\": null, \"eulerBuckleAxis\": null}, \"Arrow 4 JoccoPolar\": {\"spine\": 0.199, \"mass\": null, \"point\": 100, \"weakAxis\": 0, \"stiffAxis\": 225, \"floAxis\": 135, \"floatAxis\": null, \"eulerBuckleAxis\": null}, \"Arrow 5 PredatorHaggard\": {\"spine\": 0.209625, \"mass\": null, \"point\": 100, \"weakAxis\": 0, \"stiffAxis\": 270, \"floAxis\": 180, \"floatAxis\": null, \"eulerBuckleAxis\": null}, \"Arrow 1 Jocco Zinger\": {\"spine\": 0.2021875, \"mass\": null, \"point\": 100, \"weakAxis\": 0, \"stiffAxis\": 90, \"floAxis\": 45, \"floatAxis\": null, \"eulerBuckleAxis\": null}, \"Arrow 2 SanDragon7\": {\"spine\": 0.2140625, \"mass\": null, \"point\": 100, \"weakAxis\": 0, \"stiffAxis\": 90, \"floAxis\": 90, \"floatAxis\": null, \"eulerBuckleAxis\": null}, \"Arrow 6 GTWarrior\": {\"spine\": 0.395625, \"mass\": null, \"point\": 100, \"weakAxis\": 45, \"stiffAxis\": 292.5, \"floAxis\": 6.4, \"floatAxis\": null, \"eulerBuckleAxis\": null}}",
+  "arrowSpineByAngleMap": "{\"Arrow 4 JoccoPolar\": {\"0\": 0.217, \"22.5\": 0.215, \"45\": 0.207, \"67.5\": 0.199, \"90\": 0.193, \"112.5\": 0.192, \"135\": 0.192, \"157.5\": 0.19, \"180\": 0.189, \"202.5\": 0.187, \"225\": 0.187, \"247.5\": 0.189, \"270\": 0.197, \"292.5\": 0.201, \"315\": 0.208, \"337.5\": 0.216}}",
+  "arrows": "[{\"id\": \"a_demo_jocco\", \"arrowId\": \"Arrow 4 JoccoPolar\", \"spine\": 0.217, \"mass\": 416.5, \"point\": 100, \"note\": \"Shoot at 22.8 deg AND 202.8 deg, on Genesis (NASP).\", \"createdAt\": \"2026-08-10T15:00:00.000Z\"}]",
+  "shots": "[{\"id\": \"s_demo_01\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 22.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": -0.298, \"udIn\": -0.415, \"x\": -0.05, \"y\": 0.069, \"createdAt\": \"2026-08-11T15:03:00.000Z\"}, {\"id\": \"s_demo_02\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 22.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": 0.565, \"udIn\": 0.276, \"x\": 0.094, \"y\": -0.046, \"createdAt\": \"2026-08-12T15:06:00.000Z\"}, {\"id\": \"s_demo_03\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 22.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": 0.38, \"udIn\": 0.145, \"x\": 0.063, \"y\": -0.024, \"createdAt\": \"2026-08-13T15:09:00.000Z\"}, {\"id\": \"s_demo_04\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 22.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": -0.517, \"udIn\": -0.024, \"x\": -0.086, \"y\": 0.004, \"createdAt\": \"2026-08-14T15:12:00.000Z\"}, {\"id\": \"s_demo_05\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 202.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": 0.993, \"udIn\": 0.466, \"x\": 0.166, \"y\": -0.078, \"createdAt\": \"2026-08-15T15:15:00.000Z\"}, {\"id\": \"s_demo_06\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 202.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": 0.766, \"udIn\": 0.491, \"x\": 0.128, \"y\": -0.082, \"createdAt\": \"2026-08-16T15:18:00.000Z\"}, {\"id\": \"s_demo_07\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 202.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": 0.323, \"udIn\": 0.318, \"x\": 0.054, \"y\": -0.053, \"createdAt\": \"2026-08-17T15:21:00.000Z\"}, {\"id\": \"s_demo_08\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 202.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": 0.176, \"udIn\": 1.039, \"x\": 0.029, \"y\": -0.173, \"createdAt\": \"2026-08-18T15:24:00.000Z\"}, {\"id\": \"s_demo_09\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 67.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": -0.885, \"udIn\": -0.466, \"x\": -0.147, \"y\": 0.078, \"createdAt\": \"2026-08-19T15:27:00.000Z\"}, {\"id\": \"s_demo_10\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 67.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": -0.774, \"udIn\": 0.588, \"x\": -0.129, \"y\": -0.098, \"createdAt\": \"2026-08-20T15:30:00.000Z\"}, {\"id\": \"s_demo_11\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 67.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": 1.299, \"udIn\": -1.602, \"x\": 0.216, \"y\": 0.267, \"createdAt\": \"2026-08-21T15:33:00.000Z\"}, {\"id\": \"s_demo_12\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 67.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": -0.462, \"udIn\": 1.818, \"x\": -0.077, \"y\": -0.303, \"createdAt\": \"2026-08-22T15:36:00.000Z\"}, {\"id\": \"s_demo_13\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 180, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": -0.937, \"udIn\": 2.433, \"x\": -0.156, \"y\": -0.405, \"createdAt\": \"2026-08-23T15:39:00.000Z\"}, {\"id\": \"s_demo_14\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 180, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": 1.076, \"udIn\": -2.438, \"x\": 0.179, \"y\": 0.406, \"createdAt\": \"2026-08-24T15:42:00.000Z\"}, {\"id\": \"s_demo_15\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 180, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": -1.783, \"udIn\": -2.125, \"x\": -0.297, \"y\": 0.354, \"createdAt\": \"2026-08-25T15:45:00.000Z\"}, {\"id\": \"s_demo_16\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 180, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": -2.228, \"udIn\": 2.303, \"x\": -0.371, \"y\": -0.384, \"createdAt\": \"2026-08-26T15:48:00.000Z\"}, {\"id\": \"s_demo_17\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 112.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": 3.028, \"udIn\": 1.19, \"x\": 0.505, \"y\": -0.198, \"createdAt\": \"2026-08-27T15:51:00.000Z\"}, {\"id\": \"s_demo_18\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 112.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": 0.954, \"udIn\": 3.36, \"x\": 0.159, \"y\": -0.56, \"createdAt\": \"2026-08-10T15:54:00.000Z\"}, {\"id\": \"s_demo_19\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 112.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": -1.235, \"udIn\": 2.897, \"x\": -0.206, \"y\": -0.483, \"createdAt\": \"2026-08-11T15:57:00.000Z\"}, {\"id\": \"s_demo_20\", \"arrowId\": \"a_demo_jocco\", \"orientation\": 112.5, \"distance\": 40, \"bow\": \"Genesis (NASP)\", \"radiusInches\": 6.0, \"lrIn\": -2.264, \"udIn\": -1.35, \"x\": -0.377, \"y\": 0.225, \"createdAt\": \"2026-08-12T15:00:00.000Z\"}]",
+  "targetRadiusInches": "6",
+  "labData": "{}"
+};
+
+  const TOUR = [
+    {sel:'#tabbar .tab[data-tab="landing"]', on:'click',
+     text:'Start in Sessions. This is where you pick an arrow and get to work.'},
+    {sel:'#landing-arrow-select', on:'change', want:'Arrow 4 JoccoPolar',
+     text:'Choose Arrow 4 JoccoPolar. Its spine swings 0.187" to 0.217" around the shaft \u2014 a 0.030" spread.'},
+    {sel:'#lab-start-btn', on:'click',
+     text:'Open the SpineWizard. The 0\u00b0 baseline is already filled from the workbook import.'},
+    {sel:'#lab-next-btn', on:'click',
+     text:'All 16 positions pre-filled. The radar on the right is the shaft\u2019s real stiffness map \u2014 lopsided, not round. Step through a position.'},
+    {sel:'#ws-mode-toggle [data-mode="shot"]', on:'click',
+     text:'Now switch to RecordShots to see how that shape shows up on the target.'},
+    {sel:'#distance-preset-chips [data-yd="40"]', on:'click',
+     text:'Pick 40 yards. The range diagram rescales to match.'},
+    {sel:'#orient-chips [data-o="67.5"], #orient-chip-solo [data-o="67.5"]', on:'click',
+     text:'Tap 67.5\u00b0. Highlighted dots are shots taken with the shaft rolled to that axis.'},
+    {sel:'#orient-chips [data-o="180"], #orient-chip-solo [data-o="180"]', on:'click',
+     text:'Now 180\u00b0. Same arrow, same bow, same distance \u2014 the group moves.'},
+    {sel:'#rec-panel', on:'view',
+     text:'And here is the point: the most and least stable axis, ranked from the logged shots.'}
+  ];
+
+  let memStore=null, demoLive=false, step=0, hunting=null, raf=null;
+  const $=(s)=>document.querySelector(s);
+
+  function makeMem(seed){
+    const m=Object.assign({},seed);
+    return {getItem:k=>(k in m?m[k]:null), setItem:(k,v)=>{m[k]=String(v);},
+      removeItem:k=>{delete m[k];}, clear:()=>{Object.keys(m).forEach(k=>delete m[k]);},
+      key:i=>Object.keys(m)[i]??null, get length(){return Object.keys(m).length;}};
+  }
+  function installShim(){
+    memStore=makeMem(DEMO_SEED);
+    try{ Object.defineProperty(window,'localStorage',{value:memStore,configurable:true,writable:true}); }
+    catch(e){ console.error('demo shim failed',e); return false; }
+    return true;
+  }
+  function refreshViews(){
+    try{
+      renderArrowIdSelect(); renderLabIdSelect(); renderLabImportHint();
+      renderLabList(); render(); renderLandingArrowSelect();
+    }catch(e){ console.error('demo refresh',e); }
+  }
+
+  // ---- element waiting: tour targets are created by render()/openShotLogger(), so a
+  // target may not exist (or may be hidden) at the moment its step begins.
+  function visible(el){ return el && el.offsetParent!==null && el.getBoundingClientRect().width>0; }
+  function waitFor(sel, cb, tries){
+    tries = tries==null ? 160 : tries;
+    const el=document.querySelector(sel);
+    if (visible(el)) return cb(el);
+    if (tries<=0) return cb(null);
+    requestAnimationFrame(()=>waitFor(sel,cb,tries-1));
+  }
+
+  function place(el){
+    const spot=$('#tour-spot'), tip=$('#tour-tip');
+    if(!el){ spot.classList.remove('show'); return; }
+    const r=el.getBoundingClientRect(), pad=6;
+    spot.style.left=(r.left-pad)+'px'; spot.style.top=(r.top-pad)+'px';
+    spot.style.width=(r.width+pad*2)+'px'; spot.style.height=(r.height+pad*2)+'px';
+    spot.classList.add('show');
+    tip.classList.add('show');
+    const th=tip.offsetHeight, tw=tip.offsetWidth;
+    let top=r.bottom+14;
+    if (top+th>window.innerHeight-10) top=Math.max(10,r.top-th-14);
+    let left=Math.min(Math.max(10,r.left+r.width/2-tw/2), window.innerWidth-tw-10);
+    tip.style.top=top+'px'; tip.style.left=left+'px';
+  }
+  function track(el){
+    cancelAnimationFrame(raf);
+    const loop=()=>{ if(demoLive && $('#tour-spot').classList.contains('show')) place(el); raf=requestAnimationFrame(loop); };
+    loop();
+  }
+
+  function showStep(i){
+    step=i;
+    if (i>=TOUR.length) return finish();
+    const s=TOUR[i];
+    $('#tt-step').textContent='Step '+(i+1)+' of '+TOUR.length;
+    $('#tt-text').textContent=s.text;
+    $('#tt-show').classList.remove('on');
+    $('#tour-spot').classList.remove('hunting');
+    clearTimeout(hunting);
+    waitFor(s.sel,(el)=>{
+      if(!el){ return advance(); }
+      // place + track immediately (not after a delay) so the ring follows the smooth
+      // scroll frame-by-frame instead of sitting at the previous step's coordinates
+      place(el); track(el);
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      hunting=setTimeout(()=>{
+        $('#tour-spot').classList.add('hunting');
+        $('#tt-show').classList.add('on');
+      },6000);
+    });
+  }
+  function advance(){ clearTimeout(hunting); showStep(step+1); }
+
+  function onClick(e){
+    if(!demoLive || step>=TOUR.length) return;
+    const s=TOUR[step];
+    if(s.on!=='click') return;
+    if(e.target.closest && e.target.closest(s.sel)) setTimeout(advance,260);
+  }
+  function onChange(e){
+    if(!demoLive || step>=TOUR.length) return;
+    const s=TOUR[step];
+    if(s.on!=='change') return;
+    if(e.target.closest && e.target.closest(s.sel)){
+      if(s.want && e.target.value!==s.want) return;
+      setTimeout(advance,420);
+    }
+  }
+  $('#tt-show') && null;
+
+  function finish(){
+    cancelAnimationFrame(raf); clearTimeout(hunting);
+    $('#tour-spot').classList.remove('show'); $('#tour-tip').classList.remove('show');
+    const best=$('#rec-orient'), worst=$('#rec-worst-orient');
+    $('#tour-done-text').textContent =
+      (best && best.textContent.trim() && best.textContent.trim()!=='\u2014')
+      ? 'Most stable axis: '+best.textContent.trim()+'. Least stable: '+(worst?worst.textContent.trim():'\u2014')+
+        '. Same arrow, same bow \u2014 only the roll angle changed. Explore freely; nothing here is saved.'
+      : 'That\u2019s the workflow. Explore freely \u2014 nothing in demo mode is saved.';
+    $('#tour-done').classList.add('show');
+  }
+  function stopTour(){
+    demoLive=false; cancelAnimationFrame(raf); clearTimeout(hunting);
+    $('#tour-spot').classList.remove('show'); $('#tour-tip').classList.remove('show');
+    $('#tour-done').classList.remove('show');
+  }
+
+  function startDemo(){
+    if(!memStore && !installShim()){ showToast('Could not start demo mode'); return; }
+    if(!memStore) return;
+    refreshViews();
+    document.body.classList.add('demo-live');
+    $('#demo-banner').classList.add('show');
+    const chip=$('#demo-chip'); if(chip){ chip.classList.add('live'); chip.textContent='Demo on'; }
+    const splash=document.getElementById('app-splash'); if(splash) splash.classList.add('hide');
+    demoLive=true;
+    setTimeout(()=>{ window.scrollTo({top:0}); showStep(0); },420);
+  }
+  function exitDemo(){
+    // full reload restores the real localStorage cleanly; demo wrote nothing to disk
+    location.replace(location.pathname);
+  }
+
+  document.addEventListener('click', onClick, true);
+  document.addEventListener('change', onChange, true);
+  window.addEventListener('resize', ()=>{ if(demoLive){ const s=TOUR[step]; if(s) waitFor(s.sel,place,2); } });
+
+  document.addEventListener('DOMContentLoaded', wire);
+  if(document.readyState!=='loading') wire();
+  function wire(){
+    const d=$('#demo-btn'); if(d && !d.dataset.wired){ d.dataset.wired=1; d.addEventListener('click', startDemo); }
+    const c=$('#demo-chip'); if(c && !c.dataset.wired){ c.dataset.wired=1;
+      c.addEventListener('click', ()=>{ demoLive?stopTour():startDemo(); }); }
+    const sk=$('#tt-skip'); if(sk && !sk.dataset.wired){ sk.dataset.wired=1; sk.addEventListener('click', stopTour); }
+    const sh=$('#tt-show'); if(sh && !sh.dataset.wired){ sh.dataset.wired=1;
+      sh.addEventListener('click', ()=>{ const s=TOUR[step]; if(!s) return;
+        waitFor(s.sel,(el)=>{ if(!el) return advance();
+          if(s.on==='change' && s.want){ el.value=s.want; el.dispatchEvent(new Event('change')); }
+          else if(s.on==='view'){ advance(); }
+          else el.click(); }); }); }
+    const ag=$('#td-again'); if(ag && !ag.dataset.wired){ ag.dataset.wired=1;
+      ag.addEventListener('click', ()=>{ $('#tour-done').classList.remove('show');
+        location.hash=''; demoLive=true; window.scrollTo({top:0}); setTimeout(()=>showStep(0),300); }); }
+    const ex=$('#td-exit'); if(ex && !ex.dataset.wired){ ex.dataset.wired=1; ex.addEventListener('click', exitDemo); }
+    if(new URLSearchParams(location.search).get('demo')==='1') setTimeout(startDemo,600);
+  }
+  // final step has no click target -- advance it from the tip itself
+  document.addEventListener('click',(e)=>{
+    if(demoLive && TOUR[step] && TOUR[step].on==='view' && e.target.closest('#tour-tip')===null
+       && e.target.closest('#rec-panel')) setTimeout(advance,200);
+  }, true);
+})();
+// ===================== END Demo mode =====================
 </script>
+<!-- ===================== ADDED: Demo mode markup ===================== -->
+<div id="demo-banner">Demo mode &middot; sample fleet &middot; nothing is saved</div>
+<div id="tour-spot"></div>
+<div id="tour-tip">
+  <div class="tt-step" id="tt-step">Step 1 of 9</div>
+  <p class="tt-text" id="tt-text">—</p>
+  <div class="tt-actions">
+    <button id="tt-skip" type="button">Skip tour</button>
+    <span class="tt-spacer"></span>
+    <button id="tt-show" type="button">Show me</button>
+  </div>
+</div>
+<div id="tour-done">
+  <p id="tour-done-text">—</p>
+  <div class="row">
+    <button class="btn btn-primary btn-sm" id="td-again" style="flex:1;">Replay tour</button>
+    <button class="btn btn-ghost btn-sm" id="td-exit" style="flex:1;">Exit demo</button>
+  </div>
+</div>
+<!-- ===================== END ADDED ===================== -->
 </body>
 </html>
