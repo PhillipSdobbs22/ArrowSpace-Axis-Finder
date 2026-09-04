@@ -131,7 +131,7 @@
   }
   .modal.show{transform:translateY(0);}
   .modal-handle{width:36px; height:4px; background:var(--line); border-radius:2px; margin:0 auto 14px;}
-  /* v2.4.15: custom confirm dialog -- replaces window.confirm(), which silently fails to show
+  /* v3.0.01: custom confirm dialog -- replaces window.confirm(), which silently fails to show
      any dialog at all in an iOS home-screen (standalone) web app, unlike Chrome/Safari tabs. */
   .confirm-backdrop{
     position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:60;
@@ -1504,7 +1504,7 @@ function playIntroVoice(){
     if ('speechSynthesis' in window){
       window.speechSynthesis.cancel();
       const deep = getDeepVoice();
-      const u = new SpeechSynthesisUtterance('The Worlds First Ever ArrowSpace Axis Finder');
+      const u = new SpeechSynthesisUtterance('The ArrowSpace Axis Finder');
       u.pitch = 1;
       u.rate = 1;
       u.volume = 1;
