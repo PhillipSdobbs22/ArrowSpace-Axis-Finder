@@ -564,10 +564,12 @@
 @keyframes hhScene{
   0%{opacity:0;} 2%{opacity:1;} 93%{opacity:1;} 98%{opacity:0;} 100%{opacity:0;}
 }
-/* archer pose crossfade: A holds at full draw, B snaps in on release.
+/* Option B: the archer's BODY is static (.hh-archer never animates). Only the draw arm,
+   the bowstring and the bow limbs crossfade between drawn (A) and released (B), so the
+   shot reads without the anatomy ever stretching.
    A: 2-16% (draw 1) and 32-46% (draw 2).  B: 16-32% and 46-93% (follow-through). */
-#hh-anim .hh-pose-a{animation:hhPoseA 8s linear infinite;}
-#hh-anim .hh-pose-b{opacity:0; animation:hhPoseB 8s linear infinite;}
+#hh-anim .hh-draw-a, #hh-anim .hh-bow-a{animation:hhPoseA 8s linear infinite;}
+#hh-anim .hh-draw-b, #hh-anim .hh-bow-b{opacity:0; animation:hhPoseB 8s linear infinite;}
 @keyframes hhPoseA{
   0%,15%{opacity:1;} 16%,31%{opacity:0;} 32%,45%{opacity:1;} 46%,100%{opacity:0;}
 }
@@ -654,8 +656,8 @@ body.hh-paused #hh-anim *{animation-play-state:paused !important;}
 #hh-anim.hh-reset *{animation:none !important;}
 @media (prefers-reduced-motion: reduce){
   #hh-anim *{animation:none !important;}
-  #hh-anim .hh-pose-a{opacity:0;}
-  #hh-anim .hh-pose-b{opacity:1;}
+  #hh-anim .hh-draw-a, #hh-anim .hh-bow-a{opacity:0;}
+  #hh-anim .hh-draw-b, #hh-anim .hh-bow-b{opacity:1;}
   #hh-anim .hh-arrow1{opacity:0;}
   #hh-anim .hh-a1-half-t, #hh-anim .hh-a1-half-b{opacity:0;}
   #hh-anim .hh-arrow2{opacity:1; transform:translateX(336px);}
@@ -983,7 +985,7 @@ body.demo-live{padding-top:24px;}
   </div>
 </div>
 <header>
-  <div class="eyebrow">Arrow Tracker &middot; v2.4.34</div>
+  <div class="eyebrow">Arrow Tracker &middot; v2.4.35</div>
   <h1>ArrowSpace</h1>
   <p>Log shaft's specs by its axis (0, 22.5, 45, 67.5, 90...), log shots by axis orientation to see grouping patterns.</p>
   <div class="demo-chip-row"><button id="demo-chip" type="button">Demo</button></div>
@@ -993,101 +995,113 @@ body.demo-live{padding-top:24px;}
   <div id="hh-anim" title="Tap to replay">
     <svg viewBox="0 0 400 156" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="hhGrad" gradientUnits="userSpaceOnUse" x1="36" y1="146" x2="132" y2="22">
-          <stop offset="0" stop-color="#2f7f86"/><stop offset="0.35" stop-color="#4a90d9"/>
-          <stop offset="0.62" stop-color="#c9822f"/><stop offset="1" stop-color="#e8c93a"/>
+        <linearGradient id="hhSkin" gradientUnits="userSpaceOnUse" x1="60" y1="70" x2="105" y2="20">
+          <stop offset="0" stop-color="#b87a4e"/><stop offset="0.55" stop-color="#dda06d"/><stop offset="1" stop-color="#f0c396"/>
+        </linearGradient>
+        <linearGradient id="hhJer" gradientUnits="userSpaceOnUse" x1="66" y1="105" x2="102" y2="48">
+          <stop offset="0" stop-color="#0d3d63"/><stop offset="0.5" stop-color="#1e77b8"/><stop offset="1" stop-color="#3aa3e0"/>
+        </linearGradient>
+        <linearGradient id="hhPant" gradientUnits="userSpaceOnUse" x1="38" y1="142" x2="120" y2="96">
+          <stop offset="0" stop-color="#0b1e33"/><stop offset="0.5" stop-color="#16405f"/><stop offset="1" stop-color="#245f86"/>
+        </linearGradient>
+        <linearGradient id="hhAmb" gradientUnits="userSpaceOnUse" x1="60" y1="110" x2="110" y2="40">
+          <stop offset="0" stop-color="#c9822f"/><stop offset="1" stop-color="#f0b642"/>
         </linearGradient>
       </defs>
       <g class="hh-scene">
         <line class="hh-ground" x1="8" y1="142" x2="392" y2="142"/>
 
-      <!-- POSE A: full draw. Draw elbow high and back, hand anchored at the jaw,
-           bow deeply bent, string pulled to the anchor. -->
-      <g class="hh-pose-a">
-          <line x1="88" y1="34" x2="49.4" y2="59.1" stroke="#e8c93a" stroke-width="3.5" opacity="0.4"/>
-          <line x1="84" y1="42" x2="32.0" y2="75.8" stroke="#c9822f" stroke-width="5" opacity="0.34"/>
-          <line x1="90" y1="50" x2="58.1" y2="70.7" stroke="#e8c93a" stroke-width="2.5" opacity="0.3"/>
-          <line x1="82" y1="56" x2="23.3" y2="94.1" stroke="#2f7f86" stroke-width="6" opacity="0.34"/>
-          <line x1="86" y1="64" x2="49.1" y2="88.0" stroke="#4a90d9" stroke-width="3" opacity="0.3"/>
-          <line x1="80" y1="72" x2="31.4" y2="103.6" stroke="#c9822f" stroke-width="4.5" opacity="0.26"/>
-          <line x1="84" y1="80" x2="53.8" y2="99.6" stroke="#e8c93a" stroke-width="2.5" opacity="0.22"/>
-          <line x1="78" y1="88" x2="34.4" y2="116.3" stroke="#4a90d9" stroke-width="5" opacity="0.24"/>
-          <line x1="82" y1="96" x2="48.5" y2="117.8" stroke="#2f7f86" stroke-width="3" opacity="0.24"/>
-          <line x1="76" y1="26" x2="50.8" y2="42.3" stroke="#c9822f" stroke-width="2.5" opacity="0.26"/>
-          <line x1="86" y1="108" x2="57.5" y2="126.5" stroke="#e8c93a" stroke-width="3.5" opacity="0.16"/>
-          <path d="M64,58 L74,92" stroke="#141412" stroke-width="9" stroke-linecap="round"/>
-          <path d="M64,58 L74,92" stroke="#3a3a33" stroke-width="6" stroke-linecap="round"/>
+      <!-- STATIC ARCHER (option B): the body never animates. Only the draw arm, the
+           string and the bow limbs live in the crossfading layers below, so the shot still
+           reads without ever distorting the anatomy. -->
+      <g class="hh-archer">
+          <line x1="88" y1="34" x2="51.1" y2="58.0" stroke="#e8c93a" stroke-width="3.5" opacity="0.3"/>
+          <line x1="84" y1="42" x2="33.7" y2="74.7" stroke="#f0b642" stroke-width="4.5" opacity="0.24"/>
+          <line x1="82" y1="56" x2="25.0" y2="93.0" stroke="#39c2d6" stroke-width="5.5" opacity="0.28"/>
+          <line x1="86" y1="64" x2="50.8" y2="86.9" stroke="#4a90d9" stroke-width="3" opacity="0.24"/>
+          <line x1="80" y1="72" x2="33.0" y2="102.5" stroke="#e8c93a" stroke-width="4" opacity="0.2"/>
+          <line x1="78" y1="88" x2="36.1" y2="115.2" stroke="#39c2d6" stroke-width="4.5" opacity="0.2"/>
+          <line x1="82" y1="96" x2="50.1" y2="116.7" stroke="#4a90d9" stroke-width="3" opacity="0.18"/>
+          <path d="M63,57 L74,93" stroke="#141412" stroke-width="10" stroke-linecap="round"/>
+          <path d="M63,57 L74,93" stroke="#3a3a33" stroke-width="7" stroke-linecap="round"/>
+          <path d="M64,62 L74,90" stroke="url(#hhAmb)" stroke-width="2" stroke-linecap="round" opacity=".8"/>
           <g stroke="#8c897a" stroke-width="1.6" stroke-linecap="round">
-            <line x1="62" y1="58" x2="57" y2="44"/><line x1="65" y1="57" x2="62" y2="42"/><line x1="68" y1="57" x2="67" y2="43"/>
+            <line x1="61" y1="57" x2="56" y2="43"/><line x1="64" y1="56" x2="61" y2="41"/><line x1="67" y1="56" x2="66" y2="42"/>
           </g>
-          <path d="M78,100 L58,118 L40,138" fill="none" stroke="#141412" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M78,100 L58,118 L40,138" fill="none" stroke="url(#hhGrad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M40,138 L52,141" stroke="url(#hhGrad)" stroke-width="6" stroke-linecap="round"/>
-          <path d="M80,60 L58,36 L90,51" fill="none" stroke="#141412" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M80,60 L58,36 L90,51" fill="none" stroke="url(#hhGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M75,55 C69,60 71,74 73,88 L75,101 L97,101 L98,87 C100,73 101,60 95,55 C88,50 82,50 75,55 Z" fill="#141412" stroke="#141412" stroke-width="3.5" stroke-linejoin="round"/>
-          <path d="M75,55 C69,60 71,74 73,88 L75,101 L97,101 L98,87 C100,73 101,60 95,55 C88,50 82,50 75,55 Z" fill="url(#hhGrad)"/>
-          <path d="M87,44 L90,57" stroke="#141412" stroke-width="10" stroke-linecap="round"/>
-          <path d="M87,44 L90,57" stroke="url(#hhGrad)" stroke-width="7" stroke-linecap="round"/>
-          <path d="M79,34 C79,24 86,20 93,22 C97,24 99,28 99,33 L102,38 L98,39.5 L98,43 C98,47 92,49 88,47 C82,45 79,40 79,34 Z" fill="#141412" stroke="#141412" stroke-width="3.5" stroke-linejoin="round"/>
-          <path d="M79,34 C79,24 86,20 93,22 C97,24 99,28 99,33 L102,38 L98,39.5 L98,43 C98,47 92,49 88,47 C82,45 79,40 79,34 Z" fill="url(#hhGrad)"/>
-          <path d="M80,28 C83,20 93,18 99,25 C93,23 85,25 80,28 Z" fill="#e8c93a"/>
-          <path d="M94,100 L110,120 L118,140" fill="none" stroke="#141412" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M94,100 L110,120 L118,140" fill="none" stroke="url(#hhGrad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M118,140 L128,142" stroke="url(#hhGrad)" stroke-width="6" stroke-linecap="round"/>
-          <path d="M95,60 L112,58 L126,57" fill="none" stroke="#141412" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M95,60 L112,58 L126,57" fill="none" stroke="url(#hhGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M79,99 L59,117" fill="none" stroke="#141412" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M79,99 L59,117" fill="none" stroke="url(#hhPant)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M59,117 L44,136" fill="none" stroke="#141412" stroke-width="12.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M59,117 L44,136" fill="none" stroke="url(#hhPant)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="59" cy="117" r="6" fill="#141412"/><circle cx="59" cy="117" r="4.4" fill="url(#hhAmb)" opacity=".9"/>
+          <path d="M44,133 L35,133.5 Q31,135 30.5,138 L30.5,139.5 L46,139.5 Z" fill="#141412"/>
+          <path d="M44,133.4 L35,133.9 Q31.6,135.2 31.2,137.6 L45.4,137.6 Z" fill="#e8e6dd"/>
+          <path d="M45.6,137.6 L31.1,137.6 L31.1,139.2 L45.6,139.2 Z" fill="url(#hhAmb)"/>
+          <path d="M93,99 L110,119" fill="none" stroke="#141412" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M93,99 L110,119" fill="none" stroke="url(#hhPant)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M110,119 L117,137" fill="none" stroke="#141412" stroke-width="12.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M110,119 L117,137" fill="none" stroke="url(#hhPant)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="110" cy="119" r="6" fill="#141412"/><circle cx="110" cy="119" r="4.4" fill="url(#hhAmb)" opacity=".9"/>
+          <path d="M117,134 L126,134.5 Q130,136 130.5,139 L130.5,140.5 L115,140.5 Z" fill="#141412"/>
+          <path d="M117,134.4 L126,134.9 Q129.4,136.2 129.8,138.6 L115.6,138.6 Z" fill="#e8e6dd"/>
+          <path d="M115.4,138.6 L129.9,138.6 L129.9,140.2 L115.4,140.2 Z" fill="url(#hhAmb)"/>
+          <path d="M76,55 C69,60 71,73 73,84 C74,90 73,95 74,101 L97,101 C98,95 97,90 98,84 C100,73 102,60 95,55 C88,50 82,50 76,55 Z" fill="#141412" stroke="#141412" stroke-width="3.5"/>
+          <path d="M76,55 C69,60 71,73 73,84 C74,90 73,95 74,101 L97,101 C98,95 97,90 98,84 C100,73 102,60 95,55 C88,50 82,50 76,55 Z" fill="url(#hhJer)"/>
+          <path d="M88,51 C94,52 98,56 99,61 C100,73 98,88 97,101 L88,101 Z" fill="#ffffff" opacity=".10"/>
+          <path d="M73,68 C80,71 91,71 99,67 L98,75 C90,78 79,78 72,76 Z" fill="url(#hhAmb)" opacity=".93"/>
+          <path d="M74,93 L97,93 L97,98 L74,98 Z" fill="#0b2a44"/>
+          <path d="M78,55 C82,58 92,58 96,55" stroke="#0b2a44" stroke-width="1.2" fill="none" opacity=".55"/>
+          <path d="M93,59 L108,56" fill="none" stroke="#141412" stroke-width="11.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M93,59 L108,56" fill="none" stroke="url(#hhJer)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M108,56 L121,56" fill="none" stroke="#141412" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M108,56 L121,56" fill="none" stroke="url(#hhSkin)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="124" cy="56.5" rx="4.6" ry="5.2" fill="#141412"/>
+          <ellipse cx="124" cy="56.5" rx="3.4" ry="4" fill="url(#hhSkin)"/>
+          <path d="M122,53.4 L126,53.4" stroke="#a8683c" stroke-width="0.9" stroke-linecap="round"/>
+          <path d="M122,56.2 L126,56.2" stroke="#a8683c" stroke-width="0.9" stroke-linecap="round"/>
+          <path d="M87,45 L90,56" stroke="#141412" stroke-width="8.5" stroke-linecap="round"/>
+          <path d="M87,45 L90,56" stroke="url(#hhSkin)" stroke-width="5.6" stroke-linecap="round"/>
+          <g transform="translate(88,36) scale(0.89) translate(-88,-36)">
+            <path d="M79,34 C79,24 86,20 93,22 C97,24 99,28 99,33 L102,38 L98,39.5 L98,43 C98,47 92,49 88,47 C82,45 79,40 79,34 Z" fill="#141412" stroke="#141412" stroke-width="3.5"/>
+            <path d="M79,34 C79,24 86,20 93,22 C97,24 99,28 99,33 L102,38 L98,39.5 L98,43 C98,47 92,49 88,47 C82,45 79,40 79,34 Z" fill="url(#hhSkin)"/>
+            <path d="M80,29 C83,20.5 94,19 99,26 C99,30 98,31 97,29 C93,24 85,26 80,29 Z" fill="#2b2118"/>
+            <path d="M92.6,30.6 L97.2,31.2" stroke="#2b2118" stroke-width="1.5" stroke-linecap="round"/>
+            <circle cx="95.4" cy="34.3" r="1.4" fill="#1a1a17"/>
+            <path d="M97.5,40.5 C95,42 92,42.2 90,41.4" stroke="#a8683c" stroke-width="0.9" fill="none" opacity=".8"/>
+          </g>
+      </g>
+
+      <g class="hh-draw-a">
+          <path d="M80,60 L60,38" fill="none" stroke="#141412" stroke-width="11.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M80,60 L60,38" fill="none" stroke="url(#hhJer)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M60,38 L87,49" fill="none" stroke="#141412" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M60,38 L87,49" fill="none" stroke="url(#hhSkin)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="90" cy="51" rx="4.2" ry="4.8" fill="#141412"/>
+          <ellipse cx="90" cy="51" rx="3" ry="3.6" fill="url(#hhSkin)"/>
+      </g>
+
+      <g class="hh-draw-b">
+          <path d="M80,60 L66,42" fill="none" stroke="#141412" stroke-width="11.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M80,60 L66,42" fill="none" stroke="url(#hhJer)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M66,42 L51,32" fill="none" stroke="#141412" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M66,42 L51,32" fill="none" stroke="url(#hhSkin)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="48" cy="30" rx="4.2" ry="4.8" fill="#141412"/>
+          <ellipse cx="48" cy="30" rx="3" ry="3.6" fill="url(#hhSkin)"/>
+      </g>
+
+      <g class="hh-bow-a">
           <path d="M126,10 Q150,57 126,104" fill="none" stroke="#141412" stroke-width="6" stroke-linecap="round"/>
           <path d="M126,10 Q150,57 126,104" fill="none" stroke="#c9822f" stroke-width="3.2" stroke-linecap="round"/>
           <polyline points="126,11 90,50 126,103" fill="none" stroke="#8c897a" stroke-width="1.3"/>
-          <circle cx="90" cy="50" r="4" fill="#141412"/><circle cx="90" cy="50" r="2.9" fill="#e8c93a"/>
       </g>
 
-      <!-- POSE B: released. String sprung forward, bow limbs relaxed, draw hand
-           flown back past the ear in follow-through. -->
-      <g class="hh-pose-b">
-          <line x1="88" y1="34" x2="49.4" y2="59.1" stroke="#e8c93a" stroke-width="3.5" opacity="0.4"/>
-          <line x1="84" y1="42" x2="32.0" y2="75.8" stroke="#c9822f" stroke-width="5" opacity="0.34"/>
-          <line x1="90" y1="50" x2="58.1" y2="70.7" stroke="#e8c93a" stroke-width="2.5" opacity="0.3"/>
-          <line x1="82" y1="56" x2="23.3" y2="94.1" stroke="#2f7f86" stroke-width="6" opacity="0.34"/>
-          <line x1="86" y1="64" x2="49.1" y2="88.0" stroke="#4a90d9" stroke-width="3" opacity="0.3"/>
-          <line x1="80" y1="72" x2="31.4" y2="103.6" stroke="#c9822f" stroke-width="4.5" opacity="0.26"/>
-          <line x1="84" y1="80" x2="53.8" y2="99.6" stroke="#e8c93a" stroke-width="2.5" opacity="0.22"/>
-          <line x1="78" y1="88" x2="34.4" y2="116.3" stroke="#4a90d9" stroke-width="5" opacity="0.24"/>
-          <line x1="82" y1="96" x2="48.5" y2="117.8" stroke="#2f7f86" stroke-width="3" opacity="0.24"/>
-          <line x1="76" y1="26" x2="50.8" y2="42.3" stroke="#c9822f" stroke-width="2.5" opacity="0.26"/>
-          <line x1="86" y1="108" x2="57.5" y2="126.5" stroke="#e8c93a" stroke-width="3.5" opacity="0.16"/>
-          <path d="M64,58 L74,92" stroke="#141412" stroke-width="9" stroke-linecap="round"/>
-          <path d="M64,58 L74,92" stroke="#3a3a33" stroke-width="6" stroke-linecap="round"/>
-          <g stroke="#8c897a" stroke-width="1.6" stroke-linecap="round">
-            <line x1="62" y1="58" x2="57" y2="44"/><line x1="65" y1="57" x2="62" y2="42"/><line x1="68" y1="57" x2="67" y2="43"/>
-          </g>
-          <path d="M78,100 L58,118 L40,138" fill="none" stroke="#141412" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M78,100 L58,118 L40,138" fill="none" stroke="url(#hhGrad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M40,138 L52,141" stroke="url(#hhGrad)" stroke-width="6" stroke-linecap="round"/>
-          <path d="M80,60 L66,42 L48,30" fill="none" stroke="#141412" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M80,60 L66,42 L48,30" fill="none" stroke="url(#hhGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M75,55 C69,60 71,74 73,88 L75,101 L97,101 L98,87 C100,73 101,60 95,55 C88,50 82,50 75,55 Z" fill="#141412" stroke="#141412" stroke-width="3.5" stroke-linejoin="round"/>
-          <path d="M75,55 C69,60 71,74 73,88 L75,101 L97,101 L98,87 C100,73 101,60 95,55 C88,50 82,50 75,55 Z" fill="url(#hhGrad)"/>
-          <path d="M87,44 L90,57" stroke="#141412" stroke-width="10" stroke-linecap="round"/>
-          <path d="M87,44 L90,57" stroke="url(#hhGrad)" stroke-width="7" stroke-linecap="round"/>
-          <path d="M79,34 C79,24 86,20 93,22 C97,24 99,28 99,33 L102,38 L98,39.5 L98,43 C98,47 92,49 88,47 C82,45 79,40 79,34 Z" fill="#141412" stroke="#141412" stroke-width="3.5" stroke-linejoin="round"/>
-          <path d="M79,34 C79,24 86,20 93,22 C97,24 99,28 99,33 L102,38 L98,39.5 L98,43 C98,47 92,49 88,47 C82,45 79,40 79,34 Z" fill="url(#hhGrad)"/>
-          <path d="M80,28 C83,20 93,18 99,25 C93,23 85,25 80,28 Z" fill="#e8c93a"/>
-          <path d="M94,100 L110,120 L118,140" fill="none" stroke="#141412" stroke-width="13.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M94,100 L110,120 L118,140" fill="none" stroke="url(#hhGrad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M118,140 L128,142" stroke="url(#hhGrad)" stroke-width="6" stroke-linecap="round"/>
-          <path d="M95,60 L112,58 L126,57" fill="none" stroke="#141412" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M95,60 L112,58 L126,57" fill="none" stroke="url(#hhGrad)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      <g class="hh-bow-b">
           <path d="M126,12 Q146,57 126,102" fill="none" stroke="#141412" stroke-width="6" stroke-linecap="round"/>
           <path d="M126,12 Q146,57 126,102" fill="none" stroke="#c9822f" stroke-width="3.2" stroke-linecap="round"/>
           <polyline points="126,13 122,52 126,101" fill="none" stroke="#8c897a" stroke-width="1.3"/>
           <polyline points="126,13 124,52 126,101" fill="none" stroke="#8c897a" stroke-width="0.8" opacity=".5"/>
       </g>
 
-        <!-- TARGET BUTT: rings centred on the flight line (y=50) on a braced stand, so
-             the arrows embed in the gold instead of stopping in mid-air. Drawn first so
-             everything else sits in front of the face. -->
+        <!-- TARGET BUTT -->
         <ellipse class="hh-butt-shadow" cx="338" cy="141" rx="30" ry="3.5"/>
         <line class="hh-butt-leg-k" x1="332" y1="80" x2="324" y2="141"/>
         <line class="hh-butt-leg" x1="332" y1="80" x2="324" y2="141"/>
@@ -1101,8 +1115,6 @@ body.demo-live{padding-top:24px;}
         <ellipse cx="338" cy="50" rx="10" ry="14" fill="#d1483a"/>
         <ellipse cx="338" cy="50" rx="6" ry="8.6" fill="#e8c93a"/>
 
-        <!-- arrow1's split halves: drawn at arrow1's resting position (nock 280, tip 336),
-             hinged at the nock so the split peels open left-to-right -->
         <g class="hh-a1-half-t">
           <line class="hh-shaft-half" x1="280" y1="48.8" x2="336" y2="48.8"/>
           <polygon class="hh-tip" points="336,48.8 328,46.4 328,48.8"/>
@@ -1114,7 +1126,6 @@ body.demo-live{padding-top:24px;}
           <path class="hh-fletch" d="M280,51.2 L280,55.8 L297,52.3 L297,51.2 Z"/>
         </g>
 
-        <!-- arrows: drawn tip-at-origin; they sit nocked on the string at translateX(146) -->
         <g class="hh-arrow1">
           <line class="hh-shaft" x1="-56" y1="50" x2="0" y2="50"/>
           <polygon class="hh-tip" points="0,50 -8,46.5 -8,53.5"/>
@@ -1130,9 +1141,6 @@ body.demo-live{padding-top:24px;}
           <line class="hh-nockline" x1="-56" y1="47.4" x2="-56" y2="52.6"/>
         </g>
 
-        <!-- apple, centred on the gold in front of the face. Halves split along the
-             HORIZONTAL diameter and hinge at the left edge (331.5,50) where the arrow
-             enters, so the split peels open left-to-right along the flight path. -->
         <g class="hh-apple-whole">
           <circle class="hh-apple" cx="338" cy="50" r="6.5"/>
           <line class="hh-stem" x1="338" y1="44" x2="340" y2="40"/>
@@ -1608,7 +1616,7 @@ function playIntroVoice(){
     if ('speechSynthesis' in window){
       window.speechSynthesis.cancel();
       const deep = getDeepVoice();
-      const u = new SpeechSynthesisUtterance('First of its kind by ArrowSpace, the Arrow Axis Finder');
+      const u = new SpeechSynthesisUtterance('The Worlds First Arrow Axis Finder');
       u.pitch = 1;
       u.rate = 1;
       u.volume = 1;
@@ -4040,6 +4048,7 @@ render();
      text:'And here is the point: the most and least stable axis, ranked from the logged shots.'}
   ];
 
+  const REAL_STORAGE = window.localStorage;   // captured before any shim is installed
   let memStore=null, demoLive=false, step=0, hunting=null, raf=null;
   const $=(s)=>document.querySelector(s);
 
@@ -4141,7 +4150,7 @@ render();
       (best && best.textContent.trim() && best.textContent.trim()!=='\u2014')
       ? 'Most stable axis: '+best.textContent.trim()+'. Least stable: '+(worst?worst.textContent.trim():'\u2014')+
         '. Same arrow, same bow \u2014 only the roll angle changed. Explore freely; nothing here is saved.'
-      : 'That\u2019s the workflow. Explore freely \u2014 nothing in demo mode is saved.';
+      : 'That\u2019s the workflow \u2014 tour complete.';
     $('#tour-done').classList.add('show');
   }
   function stopTour(){
@@ -4165,6 +4174,26 @@ render();
     // full reload restores the real localStorage cleanly; demo wrote nothing to disk
     location.replace(location.pathname);
   }
+  // "Let's Begin": finish the demo and hand the viewer the real app, in place --
+  // restores the genuine localStorage (the shim is discarded, having written nothing),
+  // re-renders every view against real data, and clears all demo chrome. No reload, so
+  // the splash intro does not replay.
+  function beginForReal(){
+    stopTour();
+    memStore=null;
+    try{ Object.defineProperty(window,'localStorage',{value:REAL_STORAGE,configurable:true,writable:true}); }
+    catch(e){ console.error('restore failed',e); return location.replace(location.pathname); }
+    refreshViews();
+    document.body.classList.remove('demo-live');
+    $('#demo-banner').classList.remove('show');
+    const chip=$('#demo-chip'); if(chip){ chip.classList.remove('live'); chip.textContent='Demo'; }
+    const ws=document.getElementById('view-workspace'); if(ws) ws.style.display='none';
+    document.querySelectorAll('#tabbar .tab').forEach(b=>b.classList.toggle('active', b.getAttribute('data-tab')==='guidance'));
+    const g=document.getElementById('view-guidance'), l=document.getElementById('view-landing');
+    if(g) g.style.display='block'; if(l) l.style.display='none';
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(typeof showToast==='function') showToast('Demo finished \u2014 this is your own fleet now');
+  }
 
   document.addEventListener('click', onClick, true);
   document.addEventListener('change', onChange, true);
@@ -4186,7 +4215,9 @@ render();
     const ag=$('#td-again'); if(ag && !ag.dataset.wired){ ag.dataset.wired=1;
       ag.addEventListener('click', ()=>{ $('#tour-done').classList.remove('show');
         location.hash=''; demoLive=true; window.scrollTo({top:0}); setTimeout(()=>showStep(0),300); }); }
-    const ex=$('#td-exit'); if(ex && !ex.dataset.wired){ ex.dataset.wired=1; ex.addEventListener('click', exitDemo); }
+    const ex=$('#td-exit'); if(ex && !ex.dataset.wired){ ex.dataset.wired=1;
+      ex.addEventListener('click', ()=>$('#tour-done').classList.remove('show')); }
+    const bg=$('#td-begin'); if(bg && !bg.dataset.wired){ bg.dataset.wired=1; bg.addEventListener('click', beginForReal); }
     if(new URLSearchParams(location.search).get('demo')==='1') setTimeout(startDemo,600);
   }
   // final step has no click target -- advance it from the tip itself
@@ -4211,9 +4242,10 @@ render();
 </div>
 <div id="tour-done">
   <p id="tour-done-text">—</p>
+  <button class="btn btn-primary" id="td-begin" style="width:100%; margin-bottom:8px;">Let&rsquo;s Begin &rarr;</button>
   <div class="row">
-    <button class="btn btn-primary btn-sm" id="td-again" style="flex:1;">Replay tour</button>
-    <button class="btn btn-ghost btn-sm" id="td-exit" style="flex:1;">Exit demo</button>
+    <button class="btn btn-ghost btn-sm" id="td-again" style="flex:1;">Replay tour</button>
+    <button class="btn btn-ghost btn-sm" id="td-exit" style="flex:1;">Stay in demo</button>
   </div>
 </div>
 <!-- ===================== END ADDED ===================== -->
