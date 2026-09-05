@@ -1631,7 +1631,7 @@ function playIntroVoice(){
     if ('speechSynthesis' in window){
       window.speechSynthesis.cancel();
       const deep = getDeepVoice();
-      const u = new SpeechSynthesisUtterance('The Worlds First Ever ArrowSpace Axis Finder');
+      const u = new SpeechSynthesisUtterance('The Worlds First ArrowSpace Axis Finder');
       u.pitch = 1;
       u.rate = 1;
       u.volume = 1;
