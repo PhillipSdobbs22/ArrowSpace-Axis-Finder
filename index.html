@@ -526,14 +526,16 @@
   #asx-spot.show{display:block;}
   /* ===================== END ADDED: live teaching pointer ===================== */
 /* ===================== ADDED: header hero animation (Robin Hood loop) =====================
-   8s looping SVG scene. A detailed archer holds full draw, releases, and the arrow splits
-   the apple; a second arrow then OVERTAKES the first and splits it lengthwise. Two complete
-   figure drawings (pose A = full draw, pose B = release/follow-through) crossfade at each
-   shot rather than distorting one figure by scaling limbs.
+   8s looping SVG scene, four beats: READY -> RELEASE -> BULLSEYE -> GROUPING. The archer
+   looses three arrows; the first splits the apple to reveal the gold, and all three end
+   clustered in the bullseye. Option B: the archer's BODY is static -- only the draw arm,
+   bowstring and bow limbs crossfade between drawn (A) and released (B).
    Pure CSS keyframes -- no GIF, no network, crisp on Retina, works offline / as an iOS
    home-screen app.  Pauses while the workspace view is open; tap to replay.
-   Geometry: flight line y=50; a target butt sits behind the apple so arrows embed in
-   the gold rather than stopping in mid-air. Arrows drawn tip-at-origin with a 56px shaft, so an arrow
+   Geometry: flight line y=50; a target butt sits behind the apple so arrows embed in the
+   gold. Arrows are drawn tip-at-origin with a 56px shaft: nocked at translateX(146) the
+   nock sits at 90 (the anchor hand); the three land at (336,50), (337,46) and (335,53.5),
+   all inside the gold ellipse (rx6/ry8.6 at 338,50), forming the group. Arrows drawn tip-at-origin with a 56px shaft, so an arrow
    at translateX(146) has its nock at 90 -- exactly the archer's anchor hand -- and at
    translateX(336) its tip is buried in the apple with its nock at 280, which is where
    arrow2's tip lands. Apple r=6.5. */
@@ -551,7 +553,6 @@
 #hh-anim .hh-apple{fill:var(--danger); stroke:#141412; stroke-width:1.2;}
 #hh-anim .hh-stem{stroke:#5a5030; stroke-width:1.5; stroke-linecap:round;}
 #hh-anim .hh-shaft{stroke:var(--dim); stroke-width:2.6; stroke-linecap:round;}
-#hh-anim .hh-shaft-half{stroke:var(--dim); stroke-width:1.2; stroke-linecap:round;}
 #hh-anim .hh-tip{fill:var(--text);}
 #hh-anim .hh-fletch{fill:#4a4a44;}
 #hh-anim .hh-nockline{stroke:#4a4a44; stroke-width:1.6; stroke-linecap:round;}
@@ -564,91 +565,79 @@
 @keyframes hhScene{
   0%{opacity:0;} 2%{opacity:1;} 93%{opacity:1;} 98%{opacity:0;} 100%{opacity:0;}
 }
-/* Option B: the archer's BODY is static (.hh-archer never animates). Only the draw arm,
-   the bowstring and the bow limbs crossfade between drawn (A) and released (B), so the
-   shot reads without the anatomy ever stretching.
-   A: 2-16% (draw 1) and 32-46% (draw 2).  B: 16-32% and 46-93% (follow-through). */
+/* Draw/release crossfade -- three shots, so three A->B swaps.
+   A (at full draw): 2-14%, 28-40%, 54-66%.   B (released): 14-28%, 40-54%, 66-93%. */
 #hh-anim .hh-draw-a, #hh-anim .hh-bow-a{animation:hhPoseA 8s linear infinite;}
 #hh-anim .hh-draw-b, #hh-anim .hh-bow-b{opacity:0; animation:hhPoseB 8s linear infinite;}
 @keyframes hhPoseA{
-  0%,15%{opacity:1;} 16%,31%{opacity:0;} 32%,45%{opacity:1;} 46%,100%{opacity:0;}
+  0%,13%{opacity:1;} 14%,27%{opacity:0;} 28%,39%{opacity:1;}
+  40%,53%{opacity:0;} 54%,65%{opacity:1;} 66%,100%{opacity:0;}
 }
 @keyframes hhPoseB{
-  0%,15%{opacity:0;} 16%,31%{opacity:1;} 32%,45%{opacity:0;} 46%,100%{opacity:1;}
+  0%,13%{opacity:0;} 14%,27%{opacity:1;} 28%,39%{opacity:0;}
+  40%,53%{opacity:1;} 54%,65%{opacity:0;} 66%,100%{opacity:1;}
 }
-/* first arrow: sits nocked on the string through the draw, flies into the apple,
-   rests there, then vanishes at 55% as its split halves take over in the same spot */
+/* shot 1 -- through the apple, into the gold */
 #hh-anim .hh-arrow1{opacity:0; animation:hhArrow1 8s linear infinite;}
 @keyframes hhArrow1{
   0%,1.9%{transform:translateX(146px); opacity:0;}
-  2%,16%{transform:translateX(146px); opacity:1;}
-  21%{transform:translate(240px,-3px); opacity:1;}
-  26%,54.9%{transform:translateX(336px); opacity:1;}
-  55%,100%{transform:translateX(336px); opacity:0;}
+  2%,14%{transform:translateX(146px); opacity:1;}
+  18%{transform:translate(240px,-3px); opacity:1;}
+  22%,100%{transform:translateX(336px); opacity:1;}
 }
-/* second arrow: nocked during the second draw, strikes arrow1's nock at 55%,
-   then OVERTAKES it, driving on through the wreckage to take its place */
+/* shot 2 -- lands just above the first */
 #hh-anim .hh-arrow2{opacity:0; animation:hhArrow2 8s linear infinite;}
 @keyframes hhArrow2{
-  0%,31.9%{transform:translateX(146px); opacity:0;}
-  32%,46%{transform:translateX(146px); opacity:1;}
-  50%{transform:translate(215px,-3px); opacity:1;}
-  55%{transform:translateX(280px); opacity:1;}
-  62%{transform:translateX(336px); opacity:1;}
-  100%{transform:translateX(336px); opacity:1;}
+  0%,27.9%{transform:translateX(146px); opacity:0;}
+  28%,40%{transform:translateX(146px); opacity:1;}
+  44%{transform:translate(240px,-4px); opacity:1;}
+  48%,100%{transform:translate(337px,-4px); opacity:1;}
 }
-/* arrow1's halves, hinged at the NOCK (x=280) where arrow2 strikes, so the split
-   opens left-to-right along arrow2's flight path and the tip end splays widest */
-#hh-anim .hh-a1-half-t{transform-origin:280px 50px; opacity:0; animation:hhA1HalfT 8s linear infinite;}
-#hh-anim .hh-a1-half-b{transform-origin:280px 50px; opacity:0; animation:hhA1HalfB 8s linear infinite;}
-@keyframes hhA1HalfT{
-  0%,54.9%{opacity:0; transform:translate(0,0) rotate(0);}
-  55%{opacity:1; transform:translate(0,0) rotate(0);}
-  74%{opacity:0; transform:translate(8px,-13px) rotate(-26deg);}
-  100%{opacity:0; transform:translate(8px,-13px) rotate(-26deg);}
+/* shot 3 -- closes the group just below */
+#hh-anim .hh-arrow3{opacity:0; animation:hhArrow3 8s linear infinite;}
+@keyframes hhArrow3{
+  0%,53.9%{transform:translateX(146px); opacity:0;}
+  54%,66%{transform:translateX(146px); opacity:1;}
+  70%{transform:translate(240px,3px); opacity:1;}
+  74%,100%{transform:translate(335px,3.5px); opacity:1;}
 }
-@keyframes hhA1HalfB{
-  0%,54.9%{opacity:0; transform:translate(0,0) rotate(0);}
-  55%{opacity:1; transform:translate(0,0) rotate(0);}
-  74%{opacity:0; transform:translate(7px,15px) rotate(24deg);}
-  100%{opacity:0; transform:translate(7px,15px) rotate(24deg);}
-}
-/* apple: whole until impact, then top and bottom halves peel open. Hinged at the LEFT
-   edge (331.5px) where the arrow enters, so the cut runs along the flight path. */
+/* apple: whole until shot 1 lands, then top and bottom halves peel open, hinged at the
+   LEFT edge (331.5px) where the arrow enters, revealing the gold behind it */
 #hh-anim .hh-apple-whole{animation:hhAppleWhole 8s linear infinite;}
-@keyframes hhAppleWhole{0%,25.9%{opacity:1;} 26%,100%{opacity:0;}}
+@keyframes hhAppleWhole{0%,21.9%{opacity:1;} 22%,100%{opacity:0;}}
 #hh-anim .hh-half-t{transform-origin:331.5px 50px; opacity:0; animation:hhHalfT 8s linear infinite;}
 #hh-anim .hh-half-b{transform-origin:331.5px 50px; opacity:0; animation:hhHalfB 8s linear infinite;}
 @keyframes hhHalfT{
-  0%,25.9%{opacity:0; transform:translate(0,0) rotate(0);}
-  26%{opacity:1; transform:translate(0,0) rotate(0);}
-  44%{opacity:0; transform:translate(9px,-12px) rotate(-44deg);}
+  0%,21.9%{opacity:0; transform:translate(0,0) rotate(0);}
+  22%{opacity:1; transform:translate(0,0) rotate(0);}
+  40%{opacity:0; transform:translate(9px,-12px) rotate(-44deg);}
   100%{opacity:0; transform:translate(9px,-12px) rotate(-44deg);}
 }
 @keyframes hhHalfB{
-  0%,25.9%{opacity:0; transform:translate(0,0) rotate(0);}
-  26%{opacity:1; transform:translate(0,0) rotate(0);}
-  44%{opacity:0; transform:translate(8px,16px) rotate(42deg);}
+  0%,21.9%{opacity:0; transform:translate(0,0) rotate(0);}
+  22%{opacity:1; transform:translate(0,0) rotate(0);}
+  40%{opacity:0; transform:translate(8px,16px) rotate(42deg);}
   100%{opacity:0; transform:translate(8px,16px) rotate(42deg);}
 }
-/* impact + nock-split flashes */
-#hh-anim .hh-flash-apple{transform-origin:338px 50px; animation:hhFlash 8s linear infinite;}
-@keyframes hhFlash{
-  0%,25.9%{opacity:0; transform:scale(.2);}
-  27%{opacity:1; transform:scale(1.5);}
-  30%{opacity:0; transform:scale(2.4);}
-  100%{opacity:0; transform:scale(2.4);}
+/* one impact flash per landing */
+#hh-anim .hh-flash-apple{transform-origin:338px 50px; animation:hhFlash1 8s linear infinite;}
+@keyframes hhFlash1{
+  0%,21.9%{opacity:0; transform:scale(.2);} 23%{opacity:1; transform:scale(1.5);}
+  26%,100%{opacity:0; transform:scale(2.4);}
 }
-#hh-anim .hh-flash-nock{transform-origin:280px 50px; animation:hhFlashNock 8s linear infinite;}
-@keyframes hhFlashNock{
-  0%,54.9%{opacity:0; transform:scale(.2);}
-  56%{opacity:1; transform:scale(1.4);}
-  59%{opacity:0; transform:scale(2.2);}
-  100%{opacity:0; transform:scale(2.2);}
+#hh-anim .hh-flash-2{transform-origin:337px 46px; animation:hhFlash2 8s linear infinite;}
+@keyframes hhFlash2{
+  0%,47.9%{opacity:0; transform:scale(.2);} 49%{opacity:1; transform:scale(1.4);}
+  52%,100%{opacity:0; transform:scale(2.2);}
+}
+#hh-anim .hh-flash-3{transform-origin:335px 53.5px; animation:hhFlash3 8s linear infinite;}
+@keyframes hhFlash3{
+  0%,73.9%{opacity:0; transform:scale(.2);} 75%{opacity:1; transform:scale(1.4);}
+  78%,100%{opacity:0; transform:scale(2.2);}
 }
 #hh-anim .hh-cap{opacity:0; animation:hhCap 8s linear infinite;}
 @keyframes hhCap{
-  0%,62%{opacity:0;} 66%{opacity:1;} 90%{opacity:1;} 94%,100%{opacity:0;}
+  0%,76%{opacity:0;} 80%{opacity:1;} 90%{opacity:1;} 94%,100%{opacity:0;}
 }
 /* pause while the workspace (bench test / shot logging) is open */
 body.hh-paused #hh-anim *{animation-play-state:paused !important;}
@@ -658,9 +647,9 @@ body.hh-paused #hh-anim *{animation-play-state:paused !important;}
   #hh-anim *{animation:none !important;}
   #hh-anim .hh-draw-a, #hh-anim .hh-bow-a{opacity:0;}
   #hh-anim .hh-draw-b, #hh-anim .hh-bow-b{opacity:1;}
-  #hh-anim .hh-arrow1{opacity:0;}
-  #hh-anim .hh-a1-half-t, #hh-anim .hh-a1-half-b{opacity:0;}
-  #hh-anim .hh-arrow2{opacity:1; transform:translateX(336px);}
+  #hh-anim .hh-arrow1{opacity:1; transform:translateX(336px);}
+  #hh-anim .hh-arrow2{opacity:1; transform:translate(337px,-4px);}
+  #hh-anim .hh-arrow3{opacity:1; transform:translate(335px,3.5px);}
   #hh-anim .hh-apple-whole{opacity:0;}
   #hh-anim .hh-cap{opacity:1;}
 }
@@ -985,7 +974,7 @@ body.demo-live{padding-top:24px;}
   </div>
 </div>
 <header>
-  <div class="eyebrow">Arrow Tracker &middot; v2.4.35</div>
+  <div class="eyebrow">Arrow Tracker &middot; v2.4.36</div>
   <h1>ArrowSpace</h1>
   <p>Log shaft's specs by its axis (0, 22.5, 45, 67.5, 90...), log shots by axis orientation to see grouping patterns.</p>
   <div class="demo-chip-row"><button id="demo-chip" type="button">Demo</button></div>
@@ -998,66 +987,94 @@ body.demo-live{padding-top:24px;}
         <linearGradient id="hhSkin" gradientUnits="userSpaceOnUse" x1="60" y1="70" x2="105" y2="20">
           <stop offset="0" stop-color="#b87a4e"/><stop offset="0.55" stop-color="#dda06d"/><stop offset="1" stop-color="#f0c396"/>
         </linearGradient>
-        <linearGradient id="hhJer" gradientUnits="userSpaceOnUse" x1="66" y1="105" x2="102" y2="48">
+        <linearGradient id="hhJer" gradientUnits="userSpaceOnUse" x1="66" y1="108" x2="102" y2="48">
           <stop offset="0" stop-color="#0d3d63"/><stop offset="0.5" stop-color="#1e77b8"/><stop offset="1" stop-color="#3aa3e0"/>
         </linearGradient>
-        <linearGradient id="hhPant" gradientUnits="userSpaceOnUse" x1="38" y1="142" x2="120" y2="96">
+        <linearGradient id="hhPant" gradientUnits="userSpaceOnUse" x1="34" y1="142" x2="124" y2="96">
           <stop offset="0" stop-color="#0b1e33"/><stop offset="0.5" stop-color="#16405f"/><stop offset="1" stop-color="#245f86"/>
         </linearGradient>
         <linearGradient id="hhAmb" gradientUnits="userSpaceOnUse" x1="60" y1="110" x2="110" y2="40">
           <stop offset="0" stop-color="#c9822f"/><stop offset="1" stop-color="#f0b642"/>
         </linearGradient>
+        <linearGradient id="hhLeath" gradientUnits="userSpaceOnUse" x1="60" y1="110" x2="110" y2="40">
+          <stop offset="0" stop-color="#6b4626"/><stop offset="1" stop-color="#a8783f"/>
+        </linearGradient>
       </defs>
       <g class="hh-scene">
         <line class="hh-ground" x1="8" y1="142" x2="392" y2="142"/>
 
-      <!-- STATIC ARCHER (option B): the body never animates. Only the draw arm, the
-           string and the bow limbs live in the crossfading layers below, so the shot still
-           reads without ever distorting the anatomy. -->
+      <!-- STATIC ARCHER (option B): body never animates. Equipment pass adds a leather
+           bracer on the bow forearm, a belt with buckle and hanging strap, a quiver baldric
+           across the chest, a layered tunic hem over the leggings, fanned fletching above
+           the shoulder, and a deeper braced stance. -->
       <g class="hh-archer">
           <line x1="88" y1="34" x2="51.1" y2="58.0" stroke="#e8c93a" stroke-width="3.5" opacity="0.3"/>
           <line x1="84" y1="42" x2="33.7" y2="74.7" stroke="#f0b642" stroke-width="4.5" opacity="0.24"/>
           <line x1="82" y1="56" x2="25.0" y2="93.0" stroke="#39c2d6" stroke-width="5.5" opacity="0.28"/>
           <line x1="86" y1="64" x2="50.8" y2="86.9" stroke="#4a90d9" stroke-width="3" opacity="0.24"/>
           <line x1="80" y1="72" x2="33.0" y2="102.5" stroke="#e8c93a" stroke-width="4" opacity="0.2"/>
-          <line x1="78" y1="88" x2="36.1" y2="115.2" stroke="#39c2d6" stroke-width="4.5" opacity="0.2"/>
-          <line x1="82" y1="96" x2="50.1" y2="116.7" stroke="#4a90d9" stroke-width="3" opacity="0.18"/>
-          <path d="M63,57 L74,93" stroke="#141412" stroke-width="10" stroke-linecap="round"/>
-          <path d="M63,57 L74,93" stroke="#3a3a33" stroke-width="7" stroke-linecap="round"/>
-          <path d="M64,62 L74,90" stroke="url(#hhAmb)" stroke-width="2" stroke-linecap="round" opacity=".8"/>
-          <g stroke="#8c897a" stroke-width="1.6" stroke-linecap="round">
-            <line x1="61" y1="57" x2="56" y2="43"/><line x1="64" y1="56" x2="61" y2="41"/><line x1="67" y1="56" x2="66" y2="42"/>
-          </g>
-          <path d="M79,99 L59,117" fill="none" stroke="#141412" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M79,99 L59,117" fill="none" stroke="url(#hhPant)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M59,117 L44,136" fill="none" stroke="#141412" stroke-width="12.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M59,117 L44,136" fill="none" stroke="url(#hhPant)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="59" cy="117" r="6" fill="#141412"/><circle cx="59" cy="117" r="4.4" fill="url(#hhAmb)" opacity=".9"/>
-          <path d="M44,133 L35,133.5 Q31,135 30.5,138 L30.5,139.5 L46,139.5 Z" fill="#141412"/>
-          <path d="M44,133.4 L35,133.9 Q31.6,135.2 31.2,137.6 L45.4,137.6 Z" fill="#e8e6dd"/>
-          <path d="M45.6,137.6 L31.1,137.6 L31.1,139.2 L45.6,139.2 Z" fill="url(#hhAmb)"/>
-          <path d="M93,99 L110,119" fill="none" stroke="#141412" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M93,99 L110,119" fill="none" stroke="url(#hhPant)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M110,119 L117,137" fill="none" stroke="#141412" stroke-width="12.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M110,119 L117,137" fill="none" stroke="url(#hhPant)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="110" cy="119" r="6" fill="#141412"/><circle cx="110" cy="119" r="4.4" fill="url(#hhAmb)" opacity=".9"/>
-          <path d="M117,134 L126,134.5 Q130,136 130.5,139 L130.5,140.5 L115,140.5 Z" fill="#141412"/>
-          <path d="M117,134.4 L126,134.9 Q129.4,136.2 129.8,138.6 L115.6,138.6 Z" fill="#e8e6dd"/>
-          <path d="M115.4,138.6 L129.9,138.6 L129.9,140.2 L115.4,140.2 Z" fill="url(#hhAmb)"/>
-          <path d="M76,55 C69,60 71,73 73,84 C74,90 73,95 74,101 L97,101 C98,95 97,90 98,84 C100,73 102,60 95,55 C88,50 82,50 76,55 Z" fill="#141412" stroke="#141412" stroke-width="3.5"/>
-          <path d="M76,55 C69,60 71,73 73,84 C74,90 73,95 74,101 L97,101 C98,95 97,90 98,84 C100,73 102,60 95,55 C88,50 82,50 76,55 Z" fill="url(#hhJer)"/>
-          <path d="M88,51 C94,52 98,56 99,61 C100,73 98,88 97,101 L88,101 Z" fill="#ffffff" opacity=".10"/>
-          <path d="M73,68 C80,71 91,71 99,67 L98,75 C90,78 79,78 72,76 Z" fill="url(#hhAmb)" opacity=".93"/>
-          <path d="M74,93 L97,93 L97,98 L74,98 Z" fill="#0b2a44"/>
-          <path d="M78,55 C82,58 92,58 96,55" stroke="#0b2a44" stroke-width="1.2" fill="none" opacity=".55"/>
+          <line x1="78" y1="90" x2="36.1" y2="117.2" stroke="#39c2d6" stroke-width="4.5" opacity="0.2"/>
+          <path d="M62,56 L74,95" stroke="#141412" stroke-width="11" stroke-linecap="round"/>
+          <path d="M62,56 L74,95" stroke="url(#hhLeath)" stroke-width="8" stroke-linecap="round"/>
+          <path d="M63,62 L73,92" stroke="#3a2a18" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+          <line x1="60" y1="56" x2="54" y2="38" stroke="#8c897a" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M56.3,44.8 L59.2,42.3 L57.2,39.9 Z" fill="#c9822f"/>
+          <path d="M56.3,44.8 L53.3,44.2 L52.6,41.4 Z" fill="#c9822f"/>
+          <path d="M55.3,42.0 L58.3,39.4 L56.2,37.0 Z" fill="#c9822f"/>
+          <path d="M55.3,42.0 L52.4,41.3 L51.7,38.5 Z" fill="#c9822f"/>
+          <path d="M54.4,39.1 L57.3,36.5 L55.2,34.1 Z" fill="#c9822f"/>
+          <path d="M54.4,39.1 L51.4,38.5 L50.7,35.7 Z" fill="#c9822f"/>
+          <line x1="64" y1="55" x2="60" y2="36" stroke="#8c897a" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M61.5,43.2 L64.6,41.0 L63.0,38.4 Z" fill="#e8c93a"/>
+          <path d="M61.5,43.2 L58.5,42.3 L58.3,39.4 Z" fill="#e8c93a"/>
+          <path d="M60.9,40.2 L63.9,37.9 L62.3,35.4 Z" fill="#e8c93a"/>
+          <path d="M60.9,40.2 L57.8,39.2 L57.6,36.4 Z" fill="#e8c93a"/>
+          <path d="M60.2,37.1 L63.3,34.9 L61.7,32.3 Z" fill="#e8c93a"/>
+          <path d="M60.2,37.1 L57.2,36.2 L57.0,33.3 Z" fill="#e8c93a"/>
+          <line x1="68" y1="55" x2="66" y2="37" stroke="#8c897a" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M66.8,43.8 L69.8,41.9 L68.7,39.2 Z" fill="#c9822f"/>
+          <path d="M66.8,43.8 L63.7,42.6 L63.9,39.7 Z" fill="#c9822f"/>
+          <path d="M66.4,41.0 L69.5,39.0 L68.3,36.3 Z" fill="#c9822f"/>
+          <path d="M66.4,41.0 L63.4,39.7 L63.6,36.9 Z" fill="#c9822f"/>
+          <path d="M66.1,38.1 L69.2,36.1 L68.0,33.4 Z" fill="#c9822f"/>
+          <path d="M66.1,38.1 L63.0,36.8 L63.2,34.0 Z" fill="#c9822f"/>
+          <path d="M79,102 L56,120" fill="none" stroke="#141412" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M79,102 L56,120" fill="none" stroke="url(#hhPant)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M56,120 L38,137" fill="none" stroke="#141412" stroke-width="12.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M56,120 L38,137" fill="none" stroke="url(#hhPant)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="56" cy="120" r="6.2" fill="#141412"/><circle cx="56" cy="120" r="4.5" fill="url(#hhLeath)"/>
+          <path d="M38,133.5 L28,134 Q24,136 23.5,139 L23.5,140.6 L40,140.6 Z" fill="#141412"/>
+          <path d="M38,134 L28,134.6 Q24.6,136.2 24.2,138.7 L39.4,138.7 Z" fill="url(#hhLeath)"/>
+          <path d="M39.6,138.7 L24.1,138.7 L24.1,140.3 L39.6,140.3 Z" fill="#3a2a18"/>
+          <path d="M93,102 L112,121" fill="none" stroke="#141412" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M93,102 L112,121" fill="none" stroke="url(#hhPant)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M112,121 L121,137" fill="none" stroke="#141412" stroke-width="12.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M112,121 L121,137" fill="none" stroke="url(#hhPant)" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="112" cy="121" r="6.2" fill="#141412"/><circle cx="112" cy="121" r="4.5" fill="url(#hhLeath)"/>
+          <path d="M121,133.5 L131,134 Q135,136 135.5,139 L135.5,140.6 L119,140.6 Z" fill="#141412"/>
+          <path d="M121,134 L131,134.6 Q134.4,136.2 134.8,138.7 L119.6,138.7 Z" fill="url(#hhLeath)"/>
+          <path d="M119.4,138.7 L134.9,138.7 L134.9,140.3 L119.4,140.3 Z" fill="#3a2a18"/>
+          <path d="M76,55 C69,60 71,73 73,84 C74,90 72,96 73,104 L99,104 C100,96 98,90 99,84 C101,73 102,60 95,55 C88,50 82,50 76,55 Z" fill="#141412" stroke="#141412" stroke-width="3.5"/>
+          <path d="M76,55 C69,60 71,73 73,84 C74,90 72,96 73,104 L99,104 C100,96 98,90 99,84 C101,73 102,60 95,55 C88,50 82,50 76,55 Z" fill="url(#hhJer)"/>
+          <path d="M88,51 C94,52 98,56 99,61 C101,73 99,90 99,104 L88,104 Z" fill="#ffffff" opacity=".10"/>
+          <path d="M73,67 C80,70 91,70 99,66 L98,74 C90,77 79,77 72,75 Z" fill="url(#hhAmb)" opacity=".9"/>
+          <path d="M76,58 L96,86" stroke="#141412" stroke-width="7" stroke-linecap="round"/>
+          <path d="M76,58 L96,86" stroke="url(#hhLeath)" stroke-width="4.6" stroke-linecap="round"/>
+          <path d="M72,88 L99,88 L99,94 L72,94 Z" fill="#141412"/>
+          <path d="M72.6,88.7 L98.4,88.7 L98.4,93.3 L72.6,93.3 Z" fill="url(#hhLeath)"/>
+          <rect x="82" y="87.6" width="6" height="6.8" rx="1.4" fill="#141412"/><rect x="82.7" y="88.3" width="4.6" height="5.4" rx="1" fill="url(#hhAmb)"/>
+          <path d="M78,94 L77,105 L81,105 L81.5,94 Z" fill="url(#hhLeath)" stroke="#141412" stroke-width="1"/>
+          <path d="M73,100 C82,102 91,102 99,100 L99,104 L73,104 Z" fill="#0b2a44"/>
           <path d="M93,59 L108,56" fill="none" stroke="#141412" stroke-width="11.5" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M93,59 L108,56" fill="none" stroke="url(#hhJer)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M108,56 L121,56" fill="none" stroke="#141412" stroke-width="9.5" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M108,56 L121,56" fill="none" stroke="url(#hhSkin)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M110,52.4 L119,52.4 L119,59.6 L110,59.6 Z" fill="#141412"/>
+          <path d="M110.6,53 L118.4,53 L118.4,59 L110.6,59 Z" fill="url(#hhLeath)"/>
+          <path d="M112.4,53 L112.4,59 M116,53 L116,59" stroke="url(#hhAmb)" stroke-width="0.9" opacity=".85"/>
           <ellipse cx="124" cy="56.5" rx="4.6" ry="5.2" fill="#141412"/>
           <ellipse cx="124" cy="56.5" rx="3.4" ry="4" fill="url(#hhSkin)"/>
-          <path d="M122,53.4 L126,53.4" stroke="#a8683c" stroke-width="0.9" stroke-linecap="round"/>
-          <path d="M122,56.2 L126,56.2" stroke="#a8683c" stroke-width="0.9" stroke-linecap="round"/>
+          <path d="M122,53.4 L126,53.4 M122,56.2 L126,56.2" stroke="#a8683c" stroke-width="0.9" stroke-linecap="round"/>
           <path d="M87,45 L90,56" stroke="#141412" stroke-width="8.5" stroke-linecap="round"/>
           <path d="M87,45 L90,56" stroke="url(#hhSkin)" stroke-width="5.6" stroke-linecap="round"/>
           <g transform="translate(88,36) scale(0.89) translate(-88,-36)">
@@ -1115,17 +1132,7 @@ body.demo-live{padding-top:24px;}
         <ellipse cx="338" cy="50" rx="10" ry="14" fill="#d1483a"/>
         <ellipse cx="338" cy="50" rx="6" ry="8.6" fill="#e8c93a"/>
 
-        <g class="hh-a1-half-t">
-          <line class="hh-shaft-half" x1="280" y1="48.8" x2="336" y2="48.8"/>
-          <polygon class="hh-tip" points="336,48.8 328,46.4 328,48.8"/>
-          <path class="hh-fletch" d="M280,48.8 L280,44.2 L297,47.7 L297,48.8 Z"/>
-        </g>
-        <g class="hh-a1-half-b">
-          <line class="hh-shaft-half" x1="280" y1="51.2" x2="336" y2="51.2"/>
-          <polygon class="hh-tip" points="336,51.2 328,53.6 328,51.2"/>
-          <path class="hh-fletch" d="M280,51.2 L280,55.8 L297,52.3 L297,51.2 Z"/>
-        </g>
-
+        <!-- three shots: each nocks, flies, and stays in the gold, building a group -->
         <g class="hh-arrow1">
           <line class="hh-shaft" x1="-56" y1="50" x2="0" y2="50"/>
           <polygon class="hh-tip" points="0,50 -8,46.5 -8,53.5"/>
@@ -1134,6 +1141,13 @@ body.demo-live{padding-top:24px;}
           <line class="hh-nockline" x1="-56" y1="47.4" x2="-56" y2="52.6"/>
         </g>
         <g class="hh-arrow2">
+          <line class="hh-shaft" x1="-56" y1="50" x2="0" y2="50"/>
+          <polygon class="hh-tip" points="0,50 -8,46.5 -8,53.5"/>
+          <path class="hh-fletch" d="M-56,50 L-56,45.2 L-39,48.9 L-39,50 Z"/>
+          <path class="hh-fletch" d="M-56,50 L-56,54.8 L-39,51.1 L-39,50 Z"/>
+          <line class="hh-nockline" x1="-56" y1="47.4" x2="-56" y2="52.6"/>
+        </g>
+        <g class="hh-arrow3">
           <line class="hh-shaft" x1="-56" y1="50" x2="0" y2="50"/>
           <polygon class="hh-tip" points="0,50 -8,46.5 -8,53.5"/>
           <path class="hh-fletch" d="M-56,50 L-56,45.2 L-39,48.9 L-39,50 Z"/>
@@ -1149,9 +1163,10 @@ body.demo-live{padding-top:24px;}
         <path class="hh-half-b hh-apple" d="M331.5,50 A6.5,6.5 0 0 0 344.5,50 Z"/>
 
         <circle class="hh-flash hh-flash-apple" cx="338" cy="50" r="6"/>
-        <circle class="hh-flash hh-flash-nock" cx="280" cy="50" r="7"/>
+        <circle class="hh-flash hh-flash-2" cx="337" cy="46" r="5"/>
+        <circle class="hh-flash hh-flash-3" cx="335" cy="53.5" r="5"/>
 
-        <text class="hh-cap" x="200" y="152">NOCK SPLIT — SAME AXIS, EVERY SHOT</text>
+        <text class="hh-cap" x="200" y="152">TIGHT GROUP — SAME AXIS, EVERY SHOT</text>
       </g>
     </svg>
   </div>
@@ -1616,7 +1631,7 @@ function playIntroVoice(){
     if ('speechSynthesis' in window){
       window.speechSynthesis.cancel();
       const deep = getDeepVoice();
-      const u = new SpeechSynthesisUtterance('The Worlds First Arrow Axis Finder');
+      const u = new SpeechSynthesisUtterance('The Worlds First Ever ArrowSpace Axis Finder');
       u.pitch = 1;
       u.rate = 1;
       u.volume = 1;
